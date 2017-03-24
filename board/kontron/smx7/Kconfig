@@ -1,0 +1,12 @@
+if TARGET_SMX7
+
+config SYS_BOARD
+	default "smx7"
+
+config SYS_VENDOR
+	default "kontron"
+
+config SYS_CONFIG_NAME
+	default "smx7"
+
+endif
