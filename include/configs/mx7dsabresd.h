@@ -9,6 +9,13 @@
 #ifndef __MX7D_SABRESD_CONFIG_H
 #define __MX7D_SABRESD_CONFIG_H
 
+#ifdef CONFIG_SPL
+#include "imx7_spl.h"
+
+#define CONFIG_SPL_SPI_LOAD
+#define CONFIG_SYS_SPI_U_BOOT_OFFS      0x11000
+#endif
+
 #include "mx7_common.h"
 
 #define CONFIG_DBG_MONITOR
@@ -198,7 +205,7 @@
 #define CONFIG_ENV_IS_IN_MMC
 
 /* MXC SPI driver support */
-#define CONFIG_MXC_SPI
+/* #define CONFIG_MXC_SPI */
 
 /*
  * If want to use nand, define CONFIG_NAND_MXS and rework board
@@ -259,6 +266,7 @@
 #ifdef CONFIG_FSL_QSPI
 #define CONFIG_SPI_FLASH
 #define CONFIG_SPI_FLASH_MACRONIX
+#define CONFIG_SPI_FLASH_READ_SR
 #define CONFIG_SPI_FLASH_BAR
 #define CONFIG_SF_DEFAULT_BUS		0
 #define CONFIG_SF_DEFAULT_CS		0

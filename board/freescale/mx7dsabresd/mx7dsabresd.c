@@ -83,10 +83,12 @@ int board_spi_cs_gpio(unsigned bus, unsigned cs)
          return (bus == 2 && cs == 0) ? (IMX_GPIO_NR(6, 22)) : -1;
 }
 
+#ifdef CONFIG_MXC_SPI
 static void setup_spi(void)
 {
          imx_iomux_v3_setup_multiple_pads(ecspi3_pads, ARRAY_SIZE(ecspi3_pads));
 }
+#endif
 
 int dram_init(void)
 {
@@ -652,3 +654,133 @@ int board_usb_phy_mode(int port)
 		return USB_INIT_HOST;
 }
 #endif
+
+#ifdef CONFIG_SPL_BUILD
+#include <spl.h>
+#include <libfdt.h>
+
+int spl_start_uboot(void)
+{
+	return 1;
+}
+
+void board_boot_order(u32 *spl_boot_list)
+{
+	spl_boot_list[0] = BOOT_DEVICE_SPI;
+}
+
+static int mx7d_dcd_table[] = {
+	0x30391000, 0x00000002,
+	0x307a0000, 0x01040001,
+	0x307a01a0, 0x80400003,
+	0x307a01a4, 0x00100020,
+	0x307a01a8, 0x80100004,
+	0x307a0064, 0x00400046,
+	0x307a0490, 0x00000001,
+	0x307a00d0, 0x00020083,
+	0x307a00d4, 0x00690000,
+	0x307a00dc, 0x09300004,
+	0x307a00e0, 0x04080000,
+	0x307a00e4, 0x00100004,
+	0x307a00f4, 0x0000033f,
+	0x307a0100, 0x09081109,
+	0x307a0104, 0x0007020d,
+	0x307a0108, 0x03040407,
+	0x307a010c, 0x00002006,
+	0x307a0110, 0x04020205,
+	0x307a0114, 0x03030202,
+	0x307a0120, 0x00000803,
+	0x307a0180, 0x00800020,
+	0x307a0184, 0x02000100,
+	0x307a0190, 0x02098204,
+	0x307a0194, 0x00030303,
+	0x307a0200, 0x00000016,
+	0x307a0204, 0x00171717,
+	0x307a0214, 0x04040404,
+	0x307a0218, 0x0f040404,
+	0x307a0240, 0x06000604,
+	0x307a0244, 0x00000001,
+	0x30391000, 0x00000000,
+	0x30790000, 0x17420f40,
+	0x30790004, 0x10210100,
+	0x30790010, 0x00060807,
+	0x307900b0, 0x1010007e,
+	0x3079009c, 0x00000d6e,
+	0x30790020, 0x08080808,
+	0x30790030, 0x08080808,
+	0x30790050, 0x01000010,
+	0x30790050, 0x00000010,
+	0x307900c0, 0x0e407304,
+	0x307900c0, 0x0e447304,
+	0x307900c0, 0x0e447306,
+	0x307900c4, 0x1,
+	0x307900c0, 0x0e447304,
+	0x307900c0, 0x0e407304,
+	0x30384130, 0x00000000,
+	0x30340020, 0x00000178,
+	0x30384130, 0x00000002,
+	0x30790018, 0x0000000f,
+/* CHECK_BITS_SET 4 0x307a0004 0x1 */
+};
+
+static int mx7s_dcd_table[166];
+
+static void ddr_init(int *table, int size)
+{
+	int i;
+
+	for (i = 0; i < size / 2 ; i++) {
+		if (table[2*i] == 0x307900c4) {
+			/* wait until ZQ calibration is finished */
+			do {
+				unsigned int ddr_phy_zq_con1 = readl(table[2*i]) & 0x1;
+				udelay(10);
+				if (ddr_phy_zq_con1)
+					break;
+			} while (1);
+		} else
+			writel(table[2 * i + 1], table[2 * i]);
+	}
+	/* wait unitl normal operation mode is indicated in DDRC_STAT */
+	do {
+		unsigned int ddrc_stat = readl(0x307a0004) & 0x3;
+		udelay(10);
+		if (ddrc_stat == 0x01)
+			break;
+	} while (1);
+}
+
+static void spl_dram_init(void)
+{
+	if (is_cpu_type(MXC_CPU_MX7D))
+		ddr_init(mx7d_dcd_table, ARRAY_SIZE(mx7d_dcd_table));
+	else if (is_cpu_type(MXC_CPU_MX7S))
+		ddr_init(mx7s_dcd_table, ARRAY_SIZE(mx7s_dcd_table));
+}
+
+void board_init_f(ulong dummy)
+{
+	/* DDR initialization */
+	spl_dram_init();
+
+	/* setup AIPS and disable watchdog */
+	arch_cpu_init();
+
+	board_qspi_init();
+
+	/* iomux and setup of i2c */
+	board_early_init_f();
+
+	/* setup GP timer */
+	timer_init();
+
+	/* UART clocks enabled and gd valid - init serial console */
+	preloader_console_init();
+
+	/* Clear the BSS. */
+	memset(__bss_start, 0, __bss_end - __bss_start);
+
+	/* load/boot image from boot device */
+	board_init_r(NULL, 0);
+}
+#endif /* CONFIG_SPL_BUILD */
