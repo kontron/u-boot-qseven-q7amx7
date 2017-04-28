@@ -4,3 +4,4 @@
 #
 
 obj-y  := smx7.o
+obj-y  += iomux/
