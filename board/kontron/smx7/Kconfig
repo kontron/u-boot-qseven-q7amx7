@@ -9,4 +9,11 @@ config SYS_VENDOR
 config SYS_CONFIG_NAME
 	default "smx7"
 
+menu "Kontron Extensions"
+
+config KEX_IMX_WATCHDOG
+	bool "IMX watchdog support"
+
+endmenu
+
 endif
