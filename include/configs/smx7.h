@@ -12,33 +12,29 @@
 #include "mx7_common.h"
 
 #define CONFIG_DBG_MONITOR
-#define PHYS_SDRAM_SIZE			SZ_1G
+#define PHYS_SDRAM_SIZE             SZ_2G
 
-#define CONFIG_MXC_UART_BASE            UART1_IPS_BASE_ADDR
+#define CONFIG_MXC_UART_BASE        UART4_IPS_BASE_ADDR
+
+#define CONFIG_WATCHDOG
 
 /* Size of malloc() pool */
-#define CONFIG_SYS_MALLOC_LEN		(32 * SZ_1M)
+#define CONFIG_SYS_MALLOC_LEN       (32 * SZ_1M)
 
 /* Network */
 #define CONFIG_FEC_MXC
 #define CONFIG_MII
-#define CONFIG_FEC_XCV_TYPE             RGMII
-#define CONFIG_ETHPRIME                 "FEC"
-#define CONFIG_FEC_MXC_PHYADDR          0
+#define CONFIG_FEC_XCV_TYPE         RGMII
+#define CONFIG_ETHPRIME             "FEC"
+#define CONFIG_FEC_MXC_PHYADDR      0
 
 #define CONFIG_PHYLIB
 #define CONFIG_PHY_BROADCOM
 /* ENET1 */
-#define IMX_FEC_BASE			ENET_IPS_BASE_ADDR
+#define IMX_FEC_BASE                ENET_IPS_BASE_ADDR
 
 /* MMC Config*/
-#define CONFIG_SYS_FSL_ESDHC_ADDR       0
-
-/* PMIC */
-#define CONFIG_POWER
-#define CONFIG_POWER_I2C
-#define CONFIG_POWER_PFUZE3000
-#define CONFIG_POWER_PFUZE3000_I2C_ADDR	0x08
+#define CONFIG_SYS_FSL_ESDHC_ADDR   0
 
 #undef CONFIG_BOOTM_NETBSD
 #undef CONFIG_BOOTM_PLAN9
@@ -47,11 +43,31 @@
 /* I2C configs */
 #define CONFIG_SYS_I2C
 #define CONFIG_SYS_I2C_MXC
-#define CONFIG_SYS_I2C_MXC_I2C1		/* enable I2C bus 1 */
-#define CONFIG_SYS_I2C_SPEED		100000
+#define CONFIG_SYS_I2C_MXC_I2C1     /* enable I2C bus 1 */
+#define CONFIG_SYS_I2C_SPEED        100000
 
-#define CONFIG_SUPPORT_EMMC_BOOT	/* eMMC specific */
-#define CONFIG_SYS_MMC_IMG_LOAD_PART	1
+#define CONFIG_SUPPORT_EMMC_BOOT    /* eMMC specific */
+#define CONFIG_SYS_MMC_IMG_LOAD_PART 1
+
+/******************************************************************************
+ * Environment organization
+ */
+
+#if defined(CONFIG_SPI_FLASH) && !defined(CONFIG_MFG_TOOL)
+#define CONFIG_ENV_IS_IN_SPI_FLASH
+#define CONFIG_ENV_SECT_SIZE        (32 * 1024)
+
+#define CONFIG_ENV_OFFSET           (768 * 1024) /* Base ENV : 0xC0000 */
+#define CONFIG_ENV_SIZE             SZ_8K
+
+#define CONFIG_SYS_REDUNDAND_ENVIRONMENT
+#define CONFIG_ENV_OFFSET_REDUND    (800 * 1024) /* Redundant ENV :0xC8000 */
+#define CONFIG_ENV_SIZE_REDUND      (CONFIG_ENV_SIZE)
+#else
+#define CONFIG_ENV_IS_NOWHERE
+#define CONFIG_ENV_SIZE             SZ_8K
+#endif
+
 
 #ifdef CONFIG_IMX_BOOTAUX
 /* Set to QSPI1 A flash at default */
@@ -193,43 +209,15 @@
 #define CONFIG_SYS_INIT_SP_ADDR \
 	(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_SP_OFFSET)
 
-/* environment organization */
-#define CONFIG_ENV_SIZE			SZ_8K
-#define CONFIG_ENV_IS_IN_MMC
-
 /* MXC SPI driver support */
 #define CONFIG_MXC_SPI
 
-/*
- * If want to use nand, define CONFIG_NAND_MXS and rework board
- * to support nand, since emmc has pin conflicts with nand
- */
-#ifdef CONFIG_NAND_MXS
-#define CONFIG_CMD_NAND
-#define CONFIG_CMD_NAND_TRIMFFS
+#define CONFIG_ENV_OFFSET           (8 * SZ_64K)
+#define CONFIG_SYS_FSL_USDHC_NUM    2
 
-/* NAND stuff */
-#define CONFIG_SYS_MAX_NAND_DEVICE	1
-#define CONFIG_SYS_NAND_BASE		0x40000000
-#define CONFIG_SYS_NAND_5_ADDR_CYCLE
-#define CONFIG_SYS_NAND_ONFI_DETECTION
-
-/* DMA stuff, needed for GPMI/MXS NAND support */
-#define CONFIG_APBH_DMA
-#define CONFIG_APBH_DMA_BURST
-#define CONFIG_APBH_DMA_BURST8
-#endif
-
-#define CONFIG_ENV_OFFSET		(8 * SZ_64K)
-#ifdef CONFIG_NAND_MXS
-#define CONFIG_SYS_FSL_USDHC_NUM	1
-#else
-#define CONFIG_SYS_FSL_USDHC_NUM	2
-#endif
-
-#define CONFIG_SYS_MMC_ENV_DEV		0   /* USDHC1 */
-#define CONFIG_SYS_MMC_ENV_PART		0	/* user area */
-#define CONFIG_MMCROOT			"/dev/mmcblk0p2"  /* USDHC1 */
+#define CONFIG_SYS_MMC_ENV_DEV      0                   /* USDHC1 */
+#define CONFIG_SYS_MMC_ENV_PART     0                   /* user area */
+#define CONFIG_MMCROOT              "/dev/mmcblk0p2"    /* USDHC1 */
 
 /* USB Configs */
 #define CONFIG_EHCI_HCD_INIT_AFTER_RESET
