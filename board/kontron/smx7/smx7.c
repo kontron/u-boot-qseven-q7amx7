@@ -24,6 +24,8 @@
 #include <asm/arch/crm_regs.h>
 #include <usb.h>
 #include <usb/ehci-ci.h>
+#include <dm.h>
+#include <dm/platform_data/serial_mxc.h>
 
 extern void BOARD_InitPins(void);
 
@@ -304,7 +306,10 @@ int board_late_init(void)
 
 int checkboard(void)
 {
+	struct iomuxc *iomuxc_regs = (struct iomuxc *)IOMUXC_BASE_ADDR;
+
 	printf("Board: Kontron SMX7 SMARC 2.0 Module\n");
+	print_buffer(IOMUXC_BASE_ADDR, iomuxc_regs, 4, 0x40, 4);
 
 	return 0;
 }
@@ -318,3 +323,14 @@ int board_usb_phy_mode(int port)
 		return USB_INIT_HOST;
 }
 #endif
+
+static struct mxc_serial_platdata mxc_serial_plat = {
+	.reg = (struct mxc_uart *)CONFIG_MXC_UART_BASE,
+	.use_dte = true,
+};
+
+U_BOOT_DEVICE(mxc_serial) = {
+	.name = "serial_mxc",
+	.platdata = &mxc_serial_plat,
+};
+

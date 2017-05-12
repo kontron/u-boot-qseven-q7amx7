@@ -12,7 +12,7 @@
 #include "mx7_common.h"
 
 #define CONFIG_DBG_MONITOR
-#define PHYS_SDRAM_SIZE             SZ_2G
+#define PHYS_SDRAM_SIZE             SZ_1G
 
 #define CONFIG_MXC_UART_BASE        UART4_IPS_BASE_ADDR
 
