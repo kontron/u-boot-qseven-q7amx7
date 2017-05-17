@@ -14,7 +14,7 @@
 #define CONFIG_DBG_MONITOR
 #define PHYS_SDRAM_SIZE             SZ_1G
 
-#define CONFIG_MXC_UART_BASE        UART4_IPS_BASE_ADDR
+#define CONFIG_MXC_UART_BASE        UART6_IPS_BASE_ADDR
 
 #define CONFIG_WATCHDOG
 
@@ -173,7 +173,11 @@
 			"fi; " \
 		"else " \
 			"bootz; " \
-		"fi;\0"
+		"fi;\0" \
+	"qspi_header_file=qspi-header.bin" "\0" \
+	"uboot_update_file=u-boot-smx7.imx" "\0" \
+	"uboot_update=bootp && tftp 80800000 ${qspi_header_file} && tftp 88000000 ${uboot_update_file} && " \
+	"sf probe 0 && sf erase 0 80000 && sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0"
 
 #define CONFIG_BOOTCOMMAND \
 	   "mmc dev ${mmcdev};" \
@@ -210,7 +214,7 @@
 	(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_SP_OFFSET)
 
 /* MXC SPI driver support */
-#define CONFIG_MXC_SPI
+/* #define CONFIG_MXC_SPI */
 
 #define CONFIG_ENV_OFFSET           (8 * SZ_64K)
 #define CONFIG_SYS_FSL_USDHC_NUM    2
@@ -247,13 +251,14 @@
 #ifdef CONFIG_FSL_QSPI
 #define CONFIG_SPI_FLASH
 #define CONFIG_SPI_FLASH_MACRONIX
+#define CONFIG_SPI_FLASH_WINBOND
 #define CONFIG_SPI_FLASH_BAR
 #define CONFIG_SF_DEFAULT_BUS		0
 #define CONFIG_SF_DEFAULT_CS		0
 #define CONFIG_SF_DEFAULT_SPEED		40000000
 #define CONFIG_SF_DEFAULT_MODE		SPI_MODE_0
 #define FSL_QSPI_FLASH_NUM		1
-#define FSL_QSPI_FLASH_SIZE		SZ_64M
+#define FSL_QSPI_FLASH_SIZE		SZ_4M
 #define QSPI0_BASE_ADDR			QSPI1_IPS_BASE_ADDR
 #define QSPI0_AMBA_BASE			QSPI0_ARB_BASE_ADDR
 #endif
