@@ -28,6 +28,7 @@
 #include <dm/platform_data/serial_mxc.h>
 
 extern void BOARD_InitPins(void);
+extern void BOARD_FixupPins(void);
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -94,7 +95,6 @@ static struct i2c_pads_info i2c_pad_info4 = {
 };
 
 #endif
-
 
 int board_spi_cs_gpio(unsigned bus, unsigned cs)
 {
@@ -201,15 +201,16 @@ int board_mmc_init(bd_t *bis)
 
 	return 0;
 }
-#endif
+#endif /* CONFIG_FSL_ESDHC */
 
 #ifdef CONFIG_FEC_MXC
 int board_eth_init(bd_t *bis)
 {
 	int ret;
 
-	/* setup_iomux_fec(); */
-
+	/* remove PHY reset */
+	gpio_direction_output(IMX_GPIO_NR(3, 21), 1);
+	
 	ret = fecmxc_initialize_multi(bis, 0,
 		CONFIG_FEC_MXC_PHYADDR, IMX_FEC_BASE);
 	if (ret)
@@ -259,6 +260,7 @@ int board_qspi_init(void)
 int board_early_init_f(void)
 {
 	BOARD_InitPins();
+	BOARD_FixupPins();
 
 	setup_i2c(0, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info1);
 	setup_i2c(1, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info2);
@@ -306,10 +308,7 @@ int board_late_init(void)
 
 int checkboard(void)
 {
-	struct iomuxc *iomuxc_regs = (struct iomuxc *)IOMUXC_BASE_ADDR;
-
 	printf("Board: Kontron SMX7 SMARC 2.0 Module\n");
-	print_buffer(IOMUXC_BASE_ADDR, iomuxc_regs, 4, 0x40, 4);
 
 	return 0;
 }
