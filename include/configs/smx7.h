@@ -113,6 +113,7 @@
 	UPDATE_M4_ENV \
 	CONFIG_MFG_ENV_SETTINGS \
 	CONFIG_DFU_ENV_SETTINGS \
+	"autoload=no" "\0" \
 	"script=boot.scr\0" \
 	"image=zImage\0" \
 	"console=ttymxc0\0" \
@@ -176,8 +177,11 @@
 		"fi;\0" \
 	"qspi_header_file=qspi-header.bin" "\0" \
 	"uboot_update_file=u-boot-smx7.imx" "\0" \
-	"uboot_update=bootp && tftp 80800000 ${qspi_header_file} && tftp 88000000 ${uboot_update_file} && " \
-	"sf probe 0 && sf erase 0 80000 && sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0"
+	"uboot_install=bootp && tftp 80800000 ${qspi_header_file} && tftp 88000000 ${uboot_update_file} && " \
+	"sf probe 0 && sf erase 0 80000 && sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0" \
+	"uboot_update=bootp && tftp 88000000 ${uboot_update_file} && " \
+	"sf probe 0 && sf read 80800000 0 200 && sf erase 0 80000 && " \
+	"sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0"
 
 #define CONFIG_BOOTCOMMAND \
 	   "mmc dev ${mmcdev};" \
