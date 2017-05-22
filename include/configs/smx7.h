@@ -21,7 +21,10 @@
 /* Size of malloc() pool */
 #define CONFIG_SYS_MALLOC_LEN       (32 * SZ_1M)
 
-/* Network */
+
+/******************************************************************************
+ * Network
+ */
 #define CONFIG_FEC_MXC
 #define CONFIG_MII
 #define CONFIG_FEC_XCV_TYPE         RGMII
@@ -40,10 +43,16 @@
 #undef CONFIG_BOOTM_PLAN9
 #undef CONFIG_BOOTM_RTEMS
 
-/* I2C configs */
+/******************************************************************************
+ * I2C Configs
+ */
 #define CONFIG_SYS_I2C
 #define CONFIG_SYS_I2C_MXC
+#define CONFIG_I2C_MULTI_BUS
 #define CONFIG_SYS_I2C_MXC_I2C1     /* enable I2C bus 1 */
+#define CONFIG_SYS_I2C_MXC_I2C2     /* enable I2C bus 2 */
+#define CONFIG_SYS_I2C_MXC_I2C3     /* enable I2C bus 3 */
+#define CONFIG_SYS_I2C_MXC_I2C4     /* enable I2C bus 4 */
 #define CONFIG_SYS_I2C_SPEED        100000
 
 #define CONFIG_SUPPORT_EMMC_BOOT    /* eMMC specific */
