@@ -210,9 +210,14 @@ int board_eth_init(bd_t *bis)
 
 	/* remove PHY reset */
 	gpio_direction_output(IMX_GPIO_NR(3, 21), 1);
-	
-	ret = fecmxc_initialize_multi(bis, 0,
-		CONFIG_FEC_MXC_PHYADDR, IMX_FEC_BASE);
+
+	/* FEC0 is connected to PHY#0 */
+	ret = fecmxc_initialize_multi(bis, 0, CONFIG_FEC_MXC_PHYADDR, IMX_FEC_BASE);
+	if (ret)
+		printf("FEC0 MXC: %s:failed\n", __func__);
+
+	/* FEC1 is connected to PHY#1 */
+	ret = fecmxc_initialize_multi(bis, 1, 1, IMX_FEC_BASE);
 	if (ret)
 		printf("FEC1 MXC: %s:failed\n", __func__);
 
