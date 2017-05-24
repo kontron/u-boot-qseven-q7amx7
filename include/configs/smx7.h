@@ -16,7 +16,7 @@
 
 #define CONFIG_MXC_UART_BASE        UART6_IPS_BASE_ADDR
 
-#define CONFIG_WATCHDOG
+/* #define CONFIG_WATCHDOG */
 
 /* Size of malloc() pool */
 #define CONFIG_SYS_MALLOC_LEN       (32 * SZ_1M)
@@ -66,7 +66,7 @@
 #define CONFIG_ENV_IS_IN_SPI_FLASH
 #define CONFIG_ENV_SECT_SIZE        (32 * 1024)
 
-#define CONFIG_ENV_OFFSET           (768 * 1024) /* Base ENV : 0xC0000 */
+#define CONFIG_ENV_OFFSET           0xC0000
 #define CONFIG_ENV_SIZE             SZ_8K
 
 #define CONFIG_SYS_REDUNDAND_ENVIRONMENT
@@ -123,6 +123,7 @@
 	CONFIG_MFG_ENV_SETTINGS \
 	CONFIG_DFU_ENV_SETTINGS \
 	"autoload=no" "\0" \
+	"bootm_boot_mode=sec" "\0" \
 	"script=boot.scr\0" \
 	"image=zImage\0" \
 	"console=ttymxc0\0" \
@@ -131,7 +132,7 @@
 	"fdt_file=imx7d-sdb.dtb\0" \
 	"fdt_addr=0x83000000\0" \
 	"boot_fdt=try\0" \
-	"ip_dyn=yes\0" \
+	"clear_env=sf probe 0 && sf erase " __stringify(CONFIG_ENV_OFFSET) " 10000" "\0" \
 	"videomode=video=ctfb:x:480,y:272,depth:24,pclk:108695,le:8,ri:4,up:2,lo:4,hs:41,vs:10,sync:0,vmode:0\0" \
 	"mmcdev="__stringify(CONFIG_SYS_MMC_ENV_DEV)"\0" \
 	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
@@ -165,14 +166,9 @@
 	"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0" \
 		"netboot=echo Booting from net ...; " \
 		"run netargs; " \
-		"if test ${ip_dyn} = yes; then " \
-			"setenv get_cmd dhcp; " \
-		"else " \
-			"setenv get_cmd tftp; " \
-		"fi; " \
-		"${get_cmd} ${image}; " \
+		"bootp && tftp ${image}; " \
 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
-			"if ${get_cmd} ${fdt_addr} ${fdt_file}; then " \
+			"if tftp ${fdt_addr} ${fdt_file}; then " \
 				"bootz ${loadaddr} - ${fdt_addr}; " \
 			"else " \
 				"if test ${boot_fdt} = try; then " \
@@ -229,7 +225,6 @@
 /* MXC SPI driver support */
 /* #define CONFIG_MXC_SPI */
 
-#define CONFIG_ENV_OFFSET           (8 * SZ_64K)
 #define CONFIG_SYS_FSL_USDHC_NUM    2
 
 #define CONFIG_SYS_MMC_ENV_DEV      0                   /* USDHC1 */
@@ -262,9 +257,6 @@
 #endif
 
 #ifdef CONFIG_FSL_QSPI
-#define CONFIG_SPI_FLASH
-#define CONFIG_SPI_FLASH_MACRONIX
-#define CONFIG_SPI_FLASH_WINBOND
 #define CONFIG_SPI_FLASH_BAR
 #define CONFIG_SF_DEFAULT_BUS		0
 #define CONFIG_SF_DEFAULT_CS		0
