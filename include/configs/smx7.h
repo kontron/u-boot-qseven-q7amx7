@@ -9,6 +9,13 @@
 #ifndef __SMX7_CONFIG_H
 #define __SMX7_CONFIG_H
 
+#ifdef CONFIG_SPL
+#include "imx7_spl.h"
+
+#define CONFIG_SPL_SPI_LOAD
+#define CONFIG_SYS_SPI_U_BOOT_OFFS      0x11000
+#endif
+
 #include "mx7_common.h"
 
 #define CONFIG_DBG_MONITOR

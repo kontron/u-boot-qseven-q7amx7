@@ -41,6 +41,7 @@ config TARGET_COLIBRI_IMX7
 config TARGET_SMX7
 	bool "Kontron SMX7"
 	select BOARD_LATE_INIT
+	select SUPPORT_SPL
 	select MX7D
 	select DM
 	select DM_THERMAL
