@@ -96,7 +96,7 @@ static int do_imx_watchdog (cmd_tbl_t *cmdtp, int flag, int argc, char * const a
 			kick_it = 0;
 			return 0;
 		}
-		imx_watchdog_timeout(timeout);
+		imx_watchdog_timeout((int)timeout);
 		kick_it = 1;
 		imx_watchdog_kick();
 		return 0;
@@ -116,8 +116,8 @@ static int do_imx_watchdog (cmd_tbl_t *cmdtp, int flag, int argc, char * const a
 			}
 			imx_watchdog_timeout((int)timeout);
 			imx_watchdog_enable();
-			if(kick_it)
-				imx_watchdog_kick();
+			kick_it = 1;            /* enable kicking */
+			imx_watchdog_kick();
 
 			return 0;
 		} else
