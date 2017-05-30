@@ -23,7 +23,7 @@
 
 #define CONFIG_MXC_UART_BASE        UART6_IPS_BASE_ADDR
 
-/* #define CONFIG_WATCHDOG */
+#define CONFIG_WATCHDOG
 
 /* Size of malloc() pool */
 #define CONFIG_SYS_MALLOC_LEN       (32 * SZ_1M)
