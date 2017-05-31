@@ -212,7 +212,7 @@ int board_eth_init(bd_t *bis)
 	gpio_direction_output(IMX_GPIO_NR(3, 21), 1);
 
 	/* FEC0 is connected to PHY#0 */
-	ret = fecmxc_initialize_multi(bis, 0, CONFIG_FEC_MXC_PHYADDR, IMX_FEC_BASE);
+	ret = fecmxc_initialize_multi(bis, 0, 0, IMX_FEC_BASE);
 	if (ret)
 		printf("FEC0 MXC: %s:failed\n", __func__);
 
@@ -229,10 +229,12 @@ static int setup_fec(void)
 	struct iomuxc_gpr_base_regs *const iomuxc_gpr_regs
 		= (struct iomuxc_gpr_base_regs *) IOMUXC_GPR_BASE_ADDR;
 
-	/* Use 125M anatop REF_CLK1 for ENET1, clear gpr1[13], gpr1[17]*/
+	/* Use 125M anatop REF_CLK1 for ENET1 and ENET2, clear gpr1[13], gpr1[17] */
 	clrsetbits_le32(&iomuxc_gpr_regs->gpr[1],
 		(IOMUXC_GPR_GPR1_GPR_ENET1_TX_CLK_SEL_MASK |
-		 IOMUXC_GPR_GPR1_GPR_ENET1_CLK_DIR_MASK), 0);
+		 IOMUXC_GPR_GPR1_GPR_ENET2_TX_CLK_SEL_MASK |
+		 IOMUXC_GPR_GPR1_GPR_ENET1_CLK_DIR_MASK    |
+		 IOMUXC_GPR_GPR1_GPR_ENET2_CLK_DIR_MASK), 0);
 
 	return set_clk_enet(ENET_125MHz);
 }

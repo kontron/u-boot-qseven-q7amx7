@@ -39,7 +39,6 @@
 #define CONFIG_FEC_MXC_PHYADDR      0
 
 #define CONFIG_PHYLIB
-#define CONFIG_PHY_BROADCOM
 /* ENET1 */
 #define IMX_FEC_BASE                ENET_IPS_BASE_ADDR
 
