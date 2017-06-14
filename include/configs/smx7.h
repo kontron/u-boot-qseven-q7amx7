@@ -18,32 +18,37 @@
 
 #include "mx7_common.h"
 
-#define CONFIG_DBG_MONITOR
-#define PHYS_SDRAM_SIZE             SZ_1G
+#define PHYS_SDRAM_SIZE                 SZ_1G
 
-#define CONFIG_MXC_UART_BASE        UART6_IPS_BASE_ADDR
-
-#define CONFIG_WATCHDOG
+#define CONFIG_MXC_UART_BASE            UART6_IPS_BASE_ADDR
 
 /* Size of malloc() pool */
-#define CONFIG_SYS_MALLOC_LEN       (32 * SZ_1M)
+#define CONFIG_SYS_MALLOC_LEN           (32 * SZ_1M)
 
+
+/******************************************************************************
+ * Miscellaneous configurable options
+ */
+#define CONFIG_WATCHDOG
+#define CONFIG_DBG_MONITOR
+
+#define CONFIG_MISC_INIT_R
 
 /******************************************************************************
  * Network
  */
 #define CONFIG_FEC_MXC
 #define CONFIG_MII
-#define CONFIG_FEC_XCV_TYPE         RGMII
-#define CONFIG_ETHPRIME             "FEC"
-#define CONFIG_FEC_MXC_PHYADDR      0
+#define CONFIG_FEC_XCV_TYPE             RGMII
+#define CONFIG_ETHPRIME                 "FEC"
+#define CONFIG_FEC_MXC_PHYADDR          0
 
 #define CONFIG_PHYLIB
 /* ENET1 */
-#define IMX_FEC_BASE                ENET_IPS_BASE_ADDR
+#define IMX_FEC_BASE                    ENET_IPS_BASE_ADDR
 
 /* MMC Config*/
-#define CONFIG_SYS_FSL_ESDHC_ADDR   0
+#define CONFIG_SYS_FSL_ESDHC_ADDR       0
 
 #undef CONFIG_BOOTM_NETBSD
 #undef CONFIG_BOOTM_PLAN9
@@ -55,14 +60,26 @@
 #define CONFIG_SYS_I2C
 #define CONFIG_SYS_I2C_MXC
 #define CONFIG_I2C_MULTI_BUS
-#define CONFIG_SYS_I2C_MXC_I2C1     /* enable I2C bus 1 */
-#define CONFIG_SYS_I2C_MXC_I2C2     /* enable I2C bus 2 */
-#define CONFIG_SYS_I2C_MXC_I2C3     /* enable I2C bus 3 */
-#define CONFIG_SYS_I2C_MXC_I2C4     /* enable I2C bus 4 */
-#define CONFIG_SYS_I2C_SPEED        100000
+#define CONFIG_SYS_I2C_MXC_I2C1         /* enable I2C bus 1 */
+#define CONFIG_SYS_I2C_MXC_I2C2         /* enable I2C bus 2 */
+#define CONFIG_SYS_I2C_MXC_I2C3         /* enable I2C bus 3 */
+#define CONFIG_SYS_I2C_MXC_I2C4         /* enable I2C bus 4 */
+#define CONFIG_SYS_I2C_SPEED            100000
 
-#define CONFIG_SUPPORT_EMMC_BOOT    /* eMMC specific */
-#define CONFIG_SYS_MMC_IMG_LOAD_PART 1
+#define CONFIG_SUPPORT_EMMC_BOOT        /* eMMC specific */
+#define CONFIG_SYS_MMC_IMG_LOAD_PART    1
+
+/******************************************************************************
+ * USB Configs
+ */
+#define CONFIG_EHCI_HCD_INIT_AFTER_RESET
+#define CONFIG_MXC_USB_PORTSC           (PORT_PTS_UTMI | PORT_PTS_PTW)
+#define CONFIG_MXC_USB_FLAGS            0
+#define CONFIG_USB_MAX_CONTROLLER_COUNT 3
+#define CONFIG_MX7_USB_HSIC_PORTSC      (PORT_PTS_HSIC | PORT_PTS_PTW)
+
+#define CONFIG_USBD_HS
+#define CONFIG_USB_FUNCTION_MASS_STORAGE
 
 /******************************************************************************
  * Environment organization
@@ -237,19 +254,7 @@
 #define CONFIG_SYS_MMC_ENV_PART     0                   /* user area */
 #define CONFIG_MMCROOT              "/dev/mmcblk0p2"    /* USDHC1 */
 
-/* USB Configs */
-#define CONFIG_EHCI_HCD_INIT_AFTER_RESET
-#define CONFIG_USB_HOST_ETHER
-#define CONFIG_USB_ETHER_ASIX
-#define CONFIG_MXC_USB_PORTSC  (PORT_PTS_UTMI | PORT_PTS_PTW)
-#define CONFIG_MXC_USB_FLAGS   0
-#define CONFIG_USB_MAX_CONTROLLER_COUNT 2
-
 #define CONFIG_IMX_THERMAL
-
-#define CONFIG_USBD_HS
-
-#define CONFIG_USB_FUNCTION_MASS_STORAGE
 
 #ifdef CONFIG_VIDEO
 #define CONFIG_VIDEO_MXS

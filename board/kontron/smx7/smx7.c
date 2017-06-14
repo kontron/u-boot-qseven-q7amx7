@@ -29,6 +29,7 @@
 
 extern void BOARD_InitPins(void);
 extern void BOARD_FixupPins(void);
+extern void hsic_1p2_regulator_out(void);
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -308,6 +309,66 @@ int board_init(void)
 	return 0;
 }
 
+#define GPC_PGC_HSIC            0xd00
+#define GPC_PGC_CPU_MAPPING     0xec
+#define GPC_PU_PGC_SW_PUP_REQ   0xf8
+#define BM_CPU_PGC_SW_PDN_PUP_REQ_USB_HSIC_PHY 0x10
+#define USB_HSIC_PHY_A7_DOMAIN  0x40
+
+static int imx_set_usb_hsic_power(void)
+{
+	u32 reg;
+	u32 val;
+
+	writel(1, GPC_IPS_BASE_ADDR + GPC_PGC_HSIC);
+
+	reg = GPC_IPS_BASE_ADDR + GPC_PGC_CPU_MAPPING;
+	val = readl(reg);
+	val |= USB_HSIC_PHY_A7_DOMAIN;
+	writel(val, reg);
+
+	hsic_1p2_regulator_out();
+
+	reg = GPC_IPS_BASE_ADDR + GPC_PU_PGC_SW_PUP_REQ;
+	val = readl(reg);
+	val |= BM_CPU_PGC_SW_PDN_PUP_REQ_USB_HSIC_PHY;
+	writel(val, reg);
+
+	while ((readl(reg) &
+		BM_CPU_PGC_SW_PDN_PUP_REQ_USB_HSIC_PHY) != 0)
+		;
+
+	writel(0, GPC_IPS_BASE_ADDR + GPC_PGC_HSIC);
+
+	return 0;
+}
+
+#define CONFIG_KEX_USBHUB_I2C_ADDR 0x2d
+
+int misc_init_r(void)
+{
+	uint8_t usbattach_cmd[] = {0xaa, 0x55, 0x00};
+
+	/* reset USBHUB */
+	gpio_direction_output(IMX_GPIO_NR(1, 0), 0);
+	udelay(1000);
+	/* remove USBHUB reset */
+	gpio_direction_output(IMX_GPIO_NR(1, 0), 1);
+	udelay(250000);
+
+	i2c_set_bus_num(1);
+	if (i2c_probe(CONFIG_KEX_USBHUB_I2C_ADDR)) {
+		printf("USBHUB not found\n");
+		return 0;
+	}
+	i2c_write(CONFIG_KEX_USBHUB_I2C_ADDR, 0, 0, usbattach_cmd, 3);
+
+	imx_set_usb_hsic_power();
+
+
+	return 0;
+}
+
 int board_late_init(void)
 {
 	return 0;
@@ -319,16 +380,6 @@ int checkboard(void)
 
 	return 0;
 }
-
-#ifdef CONFIG_USB_EHCI_MX7
-int board_usb_phy_mode(int port)
-{
-	if (port == 0)
-		return USB_INIT_DEVICE;
-	else
-		return USB_INIT_HOST;
-}
-#endif
 
 static struct mxc_serial_platdata mxc_serial_plat = {
 	.reg = (struct mxc_uart *)CONFIG_MXC_UART_BASE,

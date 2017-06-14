@@ -32,6 +32,14 @@ void BOARD_FixupPins(void)
 	HW_IOMUXC_ENET2_RX_CLK_SELECT_INPUT_WR(IOMUXC_BASE, 0x00000000u);
 }
 
+void hsic_1p2_regulator_out(void)
+{
+	/* 
+	 * allow the GPC to override register settings.
+	 * use XTALOSC_BASE which is 0x30360000 instead of PMU_BASE (0x30360200)
+	 */
+	HW_PMU_REG_HSIC_1P2_SET(XTALOSC_BASE, 0x80000000);
+}
 /*******************************************************************************
  * EOF
  ******************************************************************************/
