@@ -47,8 +47,12 @@
 /* ENET1 */
 #define IMX_FEC_BASE                    ENET_IPS_BASE_ADDR
 
-/* MMC Config*/
+/******************************************************************************
+ * MMC Config
+ */
 #define CONFIG_SYS_FSL_ESDHC_ADDR       0
+
+#define CONFIG_CMD_MMC_RAW_ECSD
 
 #undef CONFIG_BOOTM_NETBSD
 #undef CONFIG_BOOTM_PLAN9
