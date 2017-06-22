@@ -208,7 +208,12 @@ int board_mmc_init(bd_t *bis)
 int board_eth_init(bd_t *bis)
 {
 	int ret;
+	struct mxc_ccm_anatop_reg *ccm_anatop
+	    = (struct mxc_ccm_anatop_reg *) ANATOP_BASE_ADDR;
 
+	/* enable lvds output buffer for anaclk1, select 0x12 = pll_enet_div40 (25MHz) */
+	setbits_le32(&ccm_anatop->clk_misc0, 0x20 | CCM_ANALOG_CLK_MISC0_LVDS1_CLK_SEL(0x12));
+	udelay(10);
 	/* remove PHY reset */
 	gpio_direction_output(IMX_GPIO_NR(3, 21), 1);
 
