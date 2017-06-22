@@ -10,6 +10,10 @@
 #include <console.h>
 #include <mmc.h>
 
+#ifdef CONFIG_CMD_MMC_RAW_ECSD
+int do_mmc_raw_ecsd_ops(cmd_tbl_t *cmdtp, int flag, int argc, char * const argv[]);
+#endif
+
 static int curr_device = -1;
 
 static void print_mmcinfo(struct mmc *mmc)
@@ -764,6 +768,9 @@ static cmd_tbl_t cmd_mmc[] = {
 	U_BOOT_CMD_MKENT(dev, 3, 0, do_mmc_dev, "", ""),
 	U_BOOT_CMD_MKENT(list, 1, 1, do_mmc_list, "", ""),
 	U_BOOT_CMD_MKENT(hwpartition, 28, 0, do_mmc_hwpartition, "", ""),
+#ifdef CONFIG_CMD_MMC_RAW_ECSD
+	U_BOOT_CMD_MKENT(raw_ecsd, 4, 0, do_mmc_raw_ecsd_ops, "", ""),
+#endif
 #ifdef CONFIG_SUPPORT_EMMC_BOOT
 	U_BOOT_CMD_MKENT(bootbus, 5, 0, do_mmc_bootbus, "", ""),
 	U_BOOT_CMD_MKENT(bootpart-resize, 4, 0, do_mmc_boot_resize, "", ""),
