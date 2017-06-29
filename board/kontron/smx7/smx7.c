@@ -20,12 +20,16 @@
 #include <power/pmic.h>
 #include <power/pfuze3000_pmic.h>
 #include <i2c.h>
+#include <environment.h>
+#include <search.h>
 #include <asm/imx-common/mxc_i2c.h>
 #include <asm/arch/crm_regs.h>
 #include <usb.h>
 #include <usb/ehci-ci.h>
 #include <dm.h>
 #include <dm/platform_data/serial_mxc.h>
+
+#include "../common/emb_vpd.h"
 
 extern void BOARD_InitPins(void);
 extern void BOARD_FixupPins(void);
@@ -214,6 +218,7 @@ int board_eth_init(bd_t *bis)
 	/* enable lvds output buffer for anaclk1, select 0x12 = pll_enet_div40 (25MHz) */
 	setbits_le32(&ccm_anatop->clk_misc0, 0x20 | CCM_ANALOG_CLK_MISC0_LVDS1_CLK_SEL(0x12));
 	udelay(10);
+
 	/* remove PHY reset */
 	gpio_direction_output(IMX_GPIO_NR(3, 21), 1);
 
@@ -370,6 +375,7 @@ int misc_init_r(void)
 
 	imx_set_usb_hsic_power();
 
+	emb_vpd_init_r();
 
 	return 0;
 }
@@ -395,6 +401,50 @@ U_BOOT_DEVICE(mxc_serial) = {
 	.name = "serial_mxc",
 	.platdata = &mxc_serial_plat,
 };
+
+#ifdef CONFIG_CMD_KBOARDINFO
+/* board infos */
+
+char *getSerNo (void)
+{
+	ENTRY e;
+	static ENTRY *ep;
+
+	e.key = "serial#";
+	e.data = NULL;
+	hsearch_r (e, FIND, &ep, &env_htab, 0);
+	if (ep == NULL)
+		return "na";
+	else
+		return ep->data;
+}
+
+/* try to fetch identnumber */
+char *getSapId (int eeprom_num)
+{
+	return (emb_vpd_find_string_in_dmi(2, 5));
+}
+
+char *getManufacturer (int eeprom_num)
+{
+	return (emb_vpd_find_string_in_dmi(2, 1));
+}
+
+char *getProductName (int eeprom_num)
+{
+	return (emb_vpd_find_string_in_dmi(2, 2));
+}
+
+char *getManufacturerDate (int eeprom_num)
+{
+	return (emb_vpd_find_string_in_dmi(160, 2));
+}
+
+char *getRevision (int eeprom_num)
+{
+	return (emb_vpd_find_string_in_dmi(2, 3));
+}
+#endif
 
 #ifdef CONFIG_SPL_BUILD
 #include <spl.h>

@@ -33,6 +33,29 @@
 #define CONFIG_DBG_MONITOR
 
 #define CONFIG_MISC_INIT_R
+#ifndef CONFIG_SPL_BUILD
+#define CONFIG_CMD_KBOARDINFO
+#endif
+
+#ifdef CONFIG_CMD_KBOARDINFO
+#define CONFIG_KBOARDINFO_MODULE
+/* #define CONFIG_KBOARDINFO_CARRIER */
+
+#define CONFIG_EMB_EEP_SPI
+
+#define CONFIG_EMB_EEP_SPI_SIZE         0x1000
+#define CONFIG_EMB_EEP_SPI_OFFSET       0x0f0000
+#define CONFIG_EMB_EEP_SPI_BUS          CONFIG_SF_DEFAULT_BUS
+#define CONFIG_EMB_EEP_SPI_CS           CONFIG_SF_DEFAULT_CS
+#define CONFIG_EMB_EEP_SPI_SPEED        CONFIG_SF_DEFAULT_SPEED
+#define CONFIG_EMB_EEP_SPI_MODE         CONFIG_SF_DEFAULT_MODE
+
+#define CONFIG_HAS_ETH0
+
+#define D_ETHADDR                       "02:00:00:01:00:44"
+#define CONFIG_SAP_NAME                 "SK-FIRM-UBOOT-SMX7"
+#define CONFIG_SAP_NUM                  "1060-xxxx"
+#endif
 
 /******************************************************************************
  * Network
@@ -52,7 +75,9 @@
  */
 #define CONFIG_SYS_FSL_ESDHC_ADDR       0
 
+#ifndef CONFIG_SPL_BUILD
 #define CONFIG_CMD_MMC_RAW_ECSD
+#endif
 
 #undef CONFIG_BOOTM_NETBSD
 #undef CONFIG_BOOTM_PLAN9
@@ -93,7 +118,7 @@
 #define CONFIG_ENV_IS_IN_SPI_FLASH
 #define CONFIG_ENV_SECT_SIZE        (32 * 1024)
 
-#define CONFIG_ENV_OFFSET           0xC0000
+#define CONFIG_ENV_OFFSET           0x0c0000
 #define CONFIG_ENV_SIZE             SZ_8K
 
 #define CONFIG_SYS_REDUNDAND_ENVIRONMENT
