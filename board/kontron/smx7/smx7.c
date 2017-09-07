@@ -108,7 +108,10 @@ int board_spi_cs_gpio(unsigned bus, unsigned cs)
 
 int dram_init(void)
 {
-	gd->ram_size = PHYS_SDRAM_SIZE;
+	if (is_cpu_type(MXC_CPU_MX7D))
+		gd->ram_size = SZ_2G;
+	else if (is_cpu_type(MXC_CPU_MX7S))
+		gd->ram_size = SZ_1G;
 
 	return 0;
 }
@@ -487,10 +490,10 @@ static int mx7d_dcd_table[] = {
 0x307a0184, 0x02000100,
 0x307a0190, 0x02098204,
 0x307a0194, 0x00030303,
-0x307a0200, 0x00000016,
-0x307a0204, 0x00171717,
-0x307a0214, 0x04040404,
-0x307a0218, 0x0f040404,
+0x307a0200, 0x0000001f,
+0x307a0204, 0x00080808,
+0x307a0214, 0x07070707,
+0x307a0218, 0x07070707,
 0x307a0240, 0x06000604,
 0x307a0244, 0x00000001,
 0x30391000, 0x00000000,
@@ -549,10 +552,8 @@ static void ddr_init(int *table, int size)
 
 static void spl_dram_init(void)
 {
-	if (is_cpu_type(MXC_CPU_MX7D))
-		ddr_init(mx7d_dcd_table, ARRAY_SIZE(mx7d_dcd_table));
-	else if (is_cpu_type(MXC_CPU_MX7S))
-		ddr_init(mx7s_dcd_table, ARRAY_SIZE(mx7s_dcd_table));
+	/* there is no difference for dual- and solo modules */
+	ddr_init(mx7d_dcd_table, ARRAY_SIZE(mx7d_dcd_table));
 }
 
 void board_init_f(ulong dummy)
