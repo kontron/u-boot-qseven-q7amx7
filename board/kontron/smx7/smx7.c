@@ -230,10 +230,12 @@ int board_eth_init(bd_t *bis)
 	if (ret)
 		printf("FEC0 MXC: %s:failed\n", __func__);
 
-	/* FEC1 is connected to PHY#1 */
-	ret = fecmxc_initialize_multi(bis, 1, 1, IMX_FEC_BASE);
-	if (ret)
-		printf("FEC1 MXC: %s:failed\n", __func__);
+	if (is_cpu_type(MXC_CPU_MX7D)) {
+		/* FEC1 is connected to PHY#1 */
+		ret = fecmxc_initialize_multi(bis, 1, 1, IMX_FEC_BASE);
+		if (ret)
+			printf("FEC1 MXC: %s:failed\n", __func__);
+	}
 
 	return ret;
 }
