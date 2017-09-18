@@ -273,7 +273,14 @@
 	(CONFIG_SYS_INIT_RAM_ADDR + CONFIG_SYS_INIT_SP_OFFSET)
 
 /* MXC SPI driver support */
-/* #define CONFIG_MXC_SPI */
+#define CONFIG_MXC_SPI
+
+#ifdef CONFIG_MXC_SPI
+#define CONFIG_SF_DEFAULT_BUS       2
+#define CONFIG_SF_DEFAULT_CS        0
+#define CONFIG_SF_DEFAULT_SPEED     20000000
+#define CONFIG_SF_DEFAULT_MODE      SPI_MODE_0
+#endif
 
 #define CONFIG_SYS_FSL_USDHC_NUM    2
 
