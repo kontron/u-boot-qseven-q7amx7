@@ -103,7 +103,13 @@ static struct i2c_pads_info i2c_pad_info4 = {
 
 int board_spi_cs_gpio(unsigned bus, unsigned cs)
 {
-         return (bus == 2 && cs == 0) ? (IMX_GPIO_NR(6, 22)) : -1;
+	if ((bus == 2) && (cs == 0))
+		return IMX_GPIO_NR(6, 22);
+
+	if ((bus == 2) && (cs == 2))
+		return IMX_GPIO_NR(5, 9);
+
+	return -1;
 }
 
 int dram_init(void)
@@ -270,7 +276,6 @@ int board_phy_config(struct phy_device *phydev)
 }
 #endif
 
-#ifdef CONFIG_FSL_QSPI
 int board_qspi_init(void)
 {
 	/* Set the clock */
@@ -278,7 +283,6 @@ int board_qspi_init(void)
 
 	return 0;
 }
-#endif
 
 int board_early_init_f(void)
 {
@@ -380,7 +384,9 @@ int misc_init_r(void)
 
 	imx_set_usb_hsic_power();
 
+#ifdef CONFIG_EMB_EEP_SPI
 	emb_vpd_init_r();
+#endif
 
 	return 0;
 }
@@ -520,8 +526,6 @@ static int mx7d_dcd_table[] = {
 0x30790018, 0x0000000f,
 /* CHECK_BITS_SET 4 0x307a0004 0x1 */
 };
-
-static int mx7s_dcd_table[166];
 
 static void ddr_init(int *table, int size)
 {
