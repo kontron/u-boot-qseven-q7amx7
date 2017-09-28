@@ -161,6 +161,7 @@ static char *emb_eep_find_mac_in_dmi_164 (emb_vpd_info *vpdi, int string_num)
 }
 
 
+#if defined(D_ETHADDR)
 static void emb_spi_default_ethaddr (void)
 {
 	char *e_ethaddr;
@@ -171,6 +172,7 @@ static void emb_spi_default_ethaddr (void)
 		setenv  ("ethaddr", D_ETHADDR);
 	}
 }
+#endif
 
 static void emb_spi_import_ethaddr (emb_vpd_info *vpdi, const char *eth_x_addr, int num, const char *d_ethaddr)
 {
@@ -194,7 +196,7 @@ static void emb_spi_import_ethaddr (emb_vpd_info *vpdi, const char *eth_x_addr, 
 	}
 
 	/* Check if ethaddr already exists in Environment */
-	if (e_ethaddr) {
+	if (e_ethaddr && (d_ethaddr != NULL)) {
 		if (!strcmp(d_ethaddr, e_ethaddr)) {
 			printf ("Embedded EEPROM: Overwrite default %s to %s\n", eth_x_addr, v_ethaddr);
 			setenv((char*)eth_x_addr, v_ethaddr);
@@ -357,14 +359,20 @@ void emb_vpd_init_r(void)
 		if (val != NULL)
 			setenv("serial#", val);
 	} else {
+#if defined(D_ETHADDR)
 		emb_spi_default_ethaddr ();
+#endif
 		return;
 	}
 
 	/*
 	 * Import eth addresses to environment
 	 */
+#if defined(D_ETHADDR)
 	emb_spi_import_ethaddr (&emb_spi, "ethaddr", 1, D_ETHADDR);
+#else
+	emb_spi_import_ethaddr (&emb_spi, "ethaddr", 1, NULL);
+#endif
 
 	return;
 }

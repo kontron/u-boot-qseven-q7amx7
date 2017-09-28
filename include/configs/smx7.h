@@ -50,7 +50,6 @@
 
 #define CONFIG_HAS_ETH0
 
-#define D_ETHADDR                       "02:00:00:01:00:44"
 #define CONFIG_SAP_NAME                 "SK-FIRM-UBOOT-SMX7"
 #define CONFIG_SAP_NUM                  "1060-xxxx"
 #endif
@@ -174,82 +173,65 @@
 	CONFIG_DFU_ENV_SETTINGS \
 	"autoload=no" "\0" \
 	"bootm_boot_mode=sec" "\0" \
-	"script=boot.scr\0" \
-	"image=zImage\0" \
-	"console=ttymxc0\0" \
-	"fdt_high=0xffffffff\0" \
-	"initrd_high=0xffffffff\0" \
-	"fdt_file=imx7d-sdb.dtb\0" \
-	"fdt_addr=0x83000000\0" \
-	"boot_fdt=try\0" \
+	"boot_fdt=try" "\0" \
+	"bootfdt=if test ${boot_fdt} = try; then bootz; else echo WARN: Cannot load the DT; fi" "\0" \
 	"clear_env=sf probe 0 && sf erase " __stringify(CONFIG_ENV_OFFSET) " 10000" "\0" \
-	"videomode=video=ctfb:x:480,y:272,depth:24,pclk:108695,le:8,ri:4,up:2,lo:4,hs:41,vs:10,sync:0,vmode:0\0" \
+	"console=ttymxc0" "\0" \
+	"fdt_addr=0x83000000" "\0" \
+	"fdt_file=imx7d-samx7.dtb" "\0" \
+	"fdt_high=0xffffffff" "\0" \
+	"image=zImage" "\0" \
+	"initrd_high=0xffffffff" "\0" \
+	"loadbootscript=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};" "\0" \
+	"mmcargs=setenv bootargs console=${console},${baudrate} root=${mmcroot}" "\0" \
 	"mmcdev="__stringify(CONFIG_SYS_MMC_ENV_DEV)"\0" \
 	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
-	"mmcroot=" CONFIG_MMCROOT " rootwait rw\0" \
-	"mmcautodetect=yes\0" \
-	"mmcargs=setenv bootargs console=${console},${baudrate} " \
-		"root=${mmcroot}\0" \
-	"loadbootscript=" \
-		"fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};\0" \
-	"bootscript=echo Running bootscript from mmc ...; " \
-		"source\0" \
-	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}\0" \
-	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}\0" \
+	"mmcroot=" CONFIG_MMCROOT " rootwait rw" "\0" \
+	"nfsroot=/srv/export/tschaefer/samx7" "\0" \
+	"bootscript=echo Running bootscript from mmc ...; source" "\0" \
+	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}" "\0" \
+	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}" "\0" \
+	"script=boot.scr\0" \
 	"mmcboot=echo Booting from mmc ...; " \
 		"run mmcargs; " \
 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
 			"if run loadfdt; then " \
 				"bootz ${loadaddr} - ${fdt_addr}; " \
 			"else " \
-				"if test ${boot_fdt} = try; then " \
-					"bootz; " \
-				"else " \
-					"echo WARN: Cannot load the DT; " \
-				"fi; " \
+				"run bootfdt " \
 			"fi; " \
 		"else " \
 			"bootz; " \
 		"fi;\0" \
-	"netargs=setenv bootargs console=${console},${baudrate} " \
-		"root=/dev/nfs " \
-	"ip=dhcp nfsroot=${serverip}:${nfsroot},v3,tcp\0" \
-		"netboot=echo Booting from net ...; " \
-		"run netargs; " \
-		"bootp && tftp ${image}; " \
+	"netargs=setenv bootargs console=${console},${baudrate} root=/dev/nfs ip=dhcp " \
+		"nfsroot=${serverip}:${nfsroot},v3,tcp mipi_dsi_samsung.lvds_freq=50" "\0" \
+	"netboot=echo Booting from net ...; " \
+		"bootp && run netargs && tftp ${image}; " \
 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
 			"if tftp ${fdt_addr} ${fdt_file}; then " \
 				"bootz ${loadaddr} - ${fdt_addr}; " \
 			"else " \
-				"if test ${boot_fdt} = try; then " \
-					"bootz; " \
-				"else " \
-					"echo WARN: Cannot load the DT; " \
-				"fi; " \
+				"run bootfdt; " \
 			"fi; " \
 		"else " \
 			"bootz; " \
-		"fi;\0" \
+		"fi;" "\0" \
 	"qspi_header_file=qspi-header.bin" "\0" \
-	"uboot_update_file=u-boot-smx7.imx" "\0" \
+	"uboot_update_file=u-boot-smx7-spl.imx" "\0" \
 	"uboot_install=bootp && tftp 80800000 ${qspi_header_file} && tftp 88000000 ${uboot_update_file} && " \
-	"sf probe 0 && sf erase 0 80000 && sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0" \
+		"sf probe 0 && sf erase 0 80000 && sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0" \
 	"uboot_update=bootp && tftp 88000000 ${uboot_update_file} && " \
-	"sf probe 0 && sf read 80800000 0 200 && sf erase 0 80000 && " \
-	"sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0"
+		"sf probe 0 && sf read 80800000 0 200 && sf erase 0 80000 && " \
+		"sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0"
 
 #define CONFIG_BOOTCOMMAND \
-	   "mmc dev ${mmcdev};" \
-	   "mmc dev ${mmcdev}; if mmc rescan; then " \
-		   "if run loadbootscript; then " \
-			   "run bootscript; " \
-		   "else " \
-			   "if run loadimage; then " \
-				   "run mmcboot; " \
-			   "else run netboot; " \
-			   "fi; " \
-		   "fi; " \
-	   "else run netboot; fi"
+	"mmc dev ${mmcdev}; " \
+	"if mmc rescan; then " \
+		"if run loadbootscript; then run bootscript; " \
+		"else " \
+			"if run loadimage; then run mmcboot; else run netboot; fi; " \
+		"fi; " \
+	"else run netboot; fi"
 
 #define CONFIG_SYS_MEMTEST_START	0x80000000
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + 0x20000000)
