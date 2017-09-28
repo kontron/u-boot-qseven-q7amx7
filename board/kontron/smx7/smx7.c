@@ -14,6 +14,7 @@
 #include <linux/sizes.h>
 #include <common.h>
 #include <fsl_esdhc.h>
+#include <fdt_support.h>
 #include <mmc.h>
 #include <miiphy.h>
 #include <netdev.h>
@@ -402,6 +403,21 @@ int checkboard(void)
 
 	return 0;
 }
+
+#if defined(CONFIG_OF_BOARD_SETUP)
+int ft_board_setup(void *blob, bd_t *bd)
+{
+	if (is_cpu_type(MXC_CPU_MX7S)) {
+		fdt_del_node_and_alias(blob, "cpu1");
+		fdt_del_node_and_alias(blob, "ethernet1");
+		fdt_del_node_and_alias(blob, "usb2");
+		fdt_del_node_and_alias(blob, "usb2misc");
+		fdt_del_node_and_alias(blob, "pcie");
+	}
+
+	return 0;
+}
+#endif /* CONFIG_OF_BOARD_SETUP */
 
 static struct mxc_serial_platdata mxc_serial_plat = {
 	.reg = (struct mxc_uart *)CONFIG_MXC_UART_BASE,
