@@ -30,11 +30,14 @@
 #include <dm.h>
 #include <dm/platform_data/serial_mxc.h>
 
-#include "../common/emb_vpd.h"
+/* #include "../common/emb_vpd.h" */
+#include "../common/emb_eep.h"
 
 extern void BOARD_InitPins(void);
 extern void BOARD_FixupPins(void);
 extern void hsic_1p2_regulator_out(void);
+
+extern int EMB_EEP_I2C_EEPROM_BUS_NUM_1;
 
 DECLARE_GLOBAL_DATA_PTR;
 
@@ -389,6 +392,11 @@ int misc_init_r(void)
 	emb_vpd_init_r();
 #endif
 
+#ifdef CONFIG_EMB_EEP_I2C_EEPROM
+	EMB_EEP_I2C_EEPROM_BUS_NUM_1 = CONFIG_EMB_EEP_I2C_EEPROM_BUS_NUM_EE1;
+	emb_eep_init_r (1, 1);
+#endif
+
 	return 0;
 }
 
@@ -449,27 +457,27 @@ char *getSerNo (void)
 /* try to fetch identnumber */
 char *getSapId (int eeprom_num)
 {
-	return (emb_vpd_find_string_in_dmi(2, 5));
+	return (emb_eep_find_string_in_dmi(eeprom_num, 2, 5));
 }
 
 char *getManufacturer (int eeprom_num)
 {
-	return (emb_vpd_find_string_in_dmi(2, 1));
+	return (emb_eep_find_string_in_dmi(eeprom_num, 2, 1));
 }
 
 char *getProductName (int eeprom_num)
 {
-	return (emb_vpd_find_string_in_dmi(2, 2));
+	return (emb_eep_find_string_in_dmi(eeprom_num, 2, 2));
 }
 
 char *getManufacturerDate (int eeprom_num)
 {
-	return (emb_vpd_find_string_in_dmi(160, 2));
+	return (emb_eep_find_string_in_dmi(eeprom_num, 160, 2));
 }
 
 char *getRevision (int eeprom_num)
 {
-	return (emb_vpd_find_string_in_dmi(2, 3));
+	return (emb_eep_find_string_in_dmi(eeprom_num, 2, 3));
 }
 #endif
 

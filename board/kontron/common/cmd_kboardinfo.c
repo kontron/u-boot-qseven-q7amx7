@@ -46,7 +46,9 @@ int do_kboardinfo (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv [])
 {
 	u32 cpurev;
 
+#if defined(CONFIG_EMB_EEP_SPI)
 	emb_vpd_init_r();
+#endif
 
 #ifdef CONFIG_KBOARDINFO_MODULE
 	printf ("Module:\n");
