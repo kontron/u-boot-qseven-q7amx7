@@ -397,6 +397,24 @@ int misc_init_r(void)
 	emb_eep_init_r (1, 1);
 #endif
 
+	/* set PCIE present signal according to environment settings */
+	if (is_cpu_type(MXC_CPU_MX7D)) {
+		if (getenv_yesno("pcie_a_prsnt"))
+			gpio_direction_output(IMX_GPIO_NR(3,16), 0);
+		else
+			gpio_direction_output(IMX_GPIO_NR(3,16), 1);
+
+		if (getenv_yesno("pcie_b_prsnt"))
+			gpio_direction_output(IMX_GPIO_NR(3,22), 0);
+		else
+			gpio_direction_output(IMX_GPIO_NR(3,22), 1);
+
+		if (getenv_yesno("pcie_c_prsnt"))
+			gpio_direction_output(IMX_GPIO_NR(6,15), 0);
+		else
+			gpio_direction_output(IMX_GPIO_NR(6,15), 1);
+	}
+
 	return 0;
 }
 

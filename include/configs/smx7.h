@@ -187,7 +187,10 @@
 	"mmcdev="__stringify(CONFIG_SYS_MMC_ENV_DEV)"\0" \
 	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
 	"mmcroot=" CONFIG_MMCROOT " rootwait rw" "\0" \
-	"nfsroot=/srv/export/tschaefer/samx7" "\0" \
+	"nfsrootpath=/srv/export/samx7" "\0" \
+	"pcie_a_prsnt=yes" "\0" \
+	"pcie_b_prsnt=yes" "\0" \
+	"pcie_c_prsnt=yes" "\0" \
 	"bootscript=echo Running bootscript from mmc ...; source" "\0" \
 	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}" "\0" \
 	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}" "\0" \
@@ -204,7 +207,7 @@
 			"bootz; " \
 		"fi;\0" \
 	"netargs=setenv bootargs console=${console},${baudrate} root=/dev/nfs ip=dhcp " \
-		"nfsroot=${serverip}:${nfsroot},v3,tcp mipi_dsi_samsung.lvds_freq=50" "\0" \
+		"nfsroot=${serverip}:${nfsrootpath},v3,tcp mipi_dsi_samsung.lvds_freq=50" "\0" \
 	"netboot=echo Booting from net ...; " \
 		"bootp && run netargs && tftp ${image}; " \
 		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
