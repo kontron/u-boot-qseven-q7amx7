@@ -33,9 +33,11 @@
 /* #include "../common/emb_vpd.h" */
 #include "../common/emb_eep.h"
 
+
 extern void BOARD_InitPins(void);
 extern void BOARD_FixupPins(void);
 extern void hsic_1p2_regulator_out(void);
+/* extern void snvs_lpgpr_set(uint32_t); */
 
 extern int EMB_EEP_I2C_EEPROM_BUS_NUM_1;
 
@@ -415,6 +417,8 @@ int misc_init_r(void)
 			gpio_direction_output(IMX_GPIO_NR(6,15), 1);
 	}
 
+	/* snvs_lpgpr_set(0x12345678); */
+
 	return 0;
 }
 
@@ -433,14 +437,6 @@ int checkboard(void)
 #if defined(CONFIG_OF_BOARD_SETUP)
 int ft_board_setup(void *blob, bd_t *bd)
 {
-	if (is_cpu_type(MXC_CPU_MX7S)) {
-		fdt_del_node_and_alias(blob, "cpu1");
-		fdt_del_node_and_alias(blob, "ethernet1");
-		fdt_del_node_and_alias(blob, "usb2");
-		fdt_del_node_and_alias(blob, "usb2misc");
-		fdt_del_node_and_alias(blob, "pcie");
-	}
-
 	return 0;
 }
 #endif /* CONFIG_OF_BOARD_SETUP */
