@@ -417,6 +417,12 @@ int misc_init_r(void)
 			gpio_direction_output(IMX_GPIO_NR(6,15), 1);
 	}
 
+	setenv ("core_variant", "unknown");
+	if (is_cpu_type(MXC_CPU_MX7D))
+		setenv ("core_variant", "d");
+	if (is_cpu_type(MXC_CPU_MX7S))
+		setenv ("core_variant", "s");
+
 	/* snvs_lpgpr_set(0x12345678); */
 
 	return 0;
