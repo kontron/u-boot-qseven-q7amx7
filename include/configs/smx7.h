@@ -149,36 +149,14 @@
 #define UPDATE_M4_ENV ""
 #endif
 
-#define CONFIG_MFG_ENV_SETTINGS \
-	"mfgtool_args=setenv bootargs console=${console},${baudrate} " \
-		"rdinit=/linuxrc " \
-		"g_mass_storage.stall=0 g_mass_storage.removable=1 " \
-		"g_mass_storage.idVendor=0x066F g_mass_storage.idProduct=0x37FF "\
-		"g_mass_storage.iSerialNumber=\"\" "\
-		"clk_ignore_unused "\
-		"\0" \
-	"initrd_addr=0x83800000\0" \
-	"initrd_high=0xffffffff\0" \
-	"bootcmd_mfg=run mfgtool_args;bootz ${loadaddr} ${initrd_addr} ${fdt_addr};\0" \
-
-#define CONFIG_DFU_ENV_SETTINGS \
-	"dfu_alt_info=image raw 0 0x800000;"\
-		"u-boot raw 0 0x4000;"\
-		"bootimg part 0 1;"\
-		"rootfs part 0 2\0" \
-
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	UPDATE_M4_ENV \
-	CONFIG_MFG_ENV_SETTINGS \
-	CONFIG_DFU_ENV_SETTINGS \
 	"autoload=no" "\0" \
 	"bootm_boot_mode=sec" "\0" \
-	"boot_fdt=try" "\0" \
-	"bootfdt=if test ${boot_fdt} = try; then bootz; else echo WARN: Cannot load the DT; fi" "\0" \
+	"set_fdt_file=setenv fdt_file imx7${core_variant}-samx7-${panel}.dtb;" "\0" \
 	"clear_env=sf probe 0 && sf erase " __stringify(CONFIG_ENV_OFFSET) " 10000" "\0" \
 	"console=ttymxc0" "\0" \
 	"fdt_addr=0x83000000" "\0" \
-	"fdt_file=imx7d-samx7.dtb" "\0" \
 	"fdt_high=0xffffffff" "\0" \
 	"image=zImage" "\0" \
 	"initrd_high=0xffffffff" "\0" \
@@ -188,6 +166,7 @@
 	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
 	"mmcroot=" CONFIG_MMCROOT " rootwait rw" "\0" \
 	"nfsrootpath=/srv/export/samx7" "\0" \
+	"panel=ld101" "\0" \
 	"pcie_a_prsnt=yes" "\0" \
 	"pcie_b_prsnt=yes" "\0" \
 	"pcie_c_prsnt=yes" "\0" \
@@ -196,28 +175,20 @@
 	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}" "\0" \
 	"script=boot.scr\0" \
 	"mmcboot=echo Booting from mmc ...; " \
-		"run mmcargs; " \
-		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
-			"if run loadfdt; then " \
-				"bootz ${loadaddr} - ${fdt_addr}; " \
-			"else " \
-				"run bootfdt " \
-			"fi; " \
+		"run loadimage && run mmcargs && run set_fdt_file && " \
+		"if run loadfdt; then " \
+			"bootz ${loadaddr} - ${fdt_addr}; " \
 		"else " \
-			"bootz; " \
-		"fi;\0" \
+			"echo WARN: Cannot load the DT; " \
+		"fi;" "\0" \
 	"netargs=setenv bootargs console=${console},${baudrate} root=/dev/nfs ip=dhcp " \
 		"nfsroot=${serverip}:${nfsrootpath},v3,tcp mipi_dsi_samsung.lvds_freq=50" "\0" \
 	"netboot=echo Booting from net ...; " \
-		"bootp && run netargs && tftp ${image}; " \
-		"if test ${boot_fdt} = yes || test ${boot_fdt} = try; then " \
-			"if tftp ${fdt_addr} ${fdt_file}; then " \
-				"bootz ${loadaddr} - ${fdt_addr}; " \
-			"else " \
-				"run bootfdt; " \
-			"fi; " \
+		"bootp && run netargs && tftp ${image} && run set_fdt_file && " \
+		"if tftp ${fdt_addr} ${fdt_file}; then " \
+			"bootz ${loadaddr} - ${fdt_addr}; " \
 		"else " \
-			"bootz; " \
+			"echo WARN: Cannot load the DT; " \
 		"fi;" "\0" \
 	"qspi_header_file=qspi-header.bin" "\0" \
 	"uboot_update_file=u-boot-smx7-spl.imx" "\0" \
@@ -230,11 +201,14 @@
 #define CONFIG_BOOTCOMMAND \
 	"mmc dev ${mmcdev}; " \
 	"if mmc rescan; then " \
-		"if run loadbootscript; then run bootscript; " \
+		"if run loadbootscript; then " \
+			"run bootscript; " \
 		"else " \
-			"if run loadimage; then run mmcboot; else run netboot; fi; " \
+			"run mmcboot || run netboot; " \
 		"fi; " \
-	"else run netboot; fi"
+	"else " \
+		"run netboot; " \
+	"fi;"
 
 #define CONFIG_SYS_MEMTEST_START	0x80000000
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + 0x20000000)
