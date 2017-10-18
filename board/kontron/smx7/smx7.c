@@ -300,6 +300,23 @@ int board_early_init_f(void)
 	setup_i2c(2, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info3);
 	setup_i2c(3, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info4);
 
+#if defined(CONFIG_KEX_ARM_PLL_SPEED) && defined(CONFIG_SPL_BUILD)
+	/* increase CPU speed only in SPL and only on dual modules */
+	u32 reg, div_sel;
+	struct mxc_ccm_anatop_reg *ccm_anatop
+	    = (struct mxc_ccm_anatop_reg *) ANATOP_BASE_ADDR;
+
+	if (is_cpu_type(MXC_CPU_MX7D)) {
+		/* read ARM PLL control register and mask divider bits */
+		reg = readl(&ccm_anatop->pll_arm) & 0xffffff80;
+		/* assume 24MHz input osc frequency */
+		div_sel = (CONFIG_KEX_ARM_PLL_SPEED*2)/24;
+		/* set divider field */
+		reg |= div_sel;
+		writel(reg, &ccm_anatop->pll_arm);
+	}
+#endif
+
 #if 0
 	imx_iomux_v3_setup_multiple_pads(usb_otg1_pads,
 					 ARRAY_SIZE(usb_otg1_pads));

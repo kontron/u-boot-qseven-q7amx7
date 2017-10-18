@@ -16,4 +16,15 @@ config KEX_IMX_WATCHDOG
 
 endmenu
 
+config KEX_ARM_PLL_SPEED
+	int "ARM CPU Core Speed"
+	default 792
+	help
+	 Configure ARM_PLL clock which defines CPU core
+	 speed. From this value, the PLL divider div_sel
+	 is calculated and written into CCM_ANALOG_PLL_ARM
+	 register. On SMX7, this is applied only for
+	 i.MX7D CPUs.
+	 fout = fin * div_sel / 2
+
 endif
