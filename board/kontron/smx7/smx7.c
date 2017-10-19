@@ -460,6 +460,27 @@ int misc_init_r(void)
 
 int board_late_init(void)
 {
+#ifndef CONFIG_SPL_BUILD
+	ulong board_rev;
+
+	board_rev = getenv_ulong("board_rev", 10, 1);
+	if (board_rev == 0) {
+		u32 reg;
+		struct mxc_ccm_anatop_reg *ccm_anatop
+		    = (struct mxc_ccm_anatop_reg *) ANATOP_BASE_ADDR;
+
+		if (is_cpu_type(MXC_CPU_MX7D)) {
+			/* read ARM PLL control register and mask divider bits */
+			reg = readl(&ccm_anatop->pll_arm) & 0xffffff80;
+			/* set default divider field for 792 MHz */
+			reg |= 66;
+			writel(reg, &ccm_anatop->pll_arm);
+			printf("\n!!! Board revision 0 detected, setting CPU speed to 792 MHz !!!\n\n");
+		}
+
+	}
+#endif
+
 	return 0;
 }
 
