@@ -280,8 +280,10 @@ int mxc_serial_setbrg(struct udevice *dev, int baudrate)
 	writel(0xf, &uart->bir);
 	writel(clk / (2 * baudrate), &uart->bmr);
 
-	writel(UCR2_WS | UCR2_IRTS | UCR2_RXEN | UCR2_TXEN | UCR2_SRST,
-	       &uart->cr2);
+	tmp = UCR2_WS | UCR2_IRTS | UCR2_RXEN | UCR2_TXEN | UCR2_SRST;
+	if (plat->use_rtscts)
+		tmp |= UCR2_CTSC;
+	writel(tmp, &uart->cr2);
 	writel(UCR1_UARTEN, &uart->cr1);
 
 	return 0;
