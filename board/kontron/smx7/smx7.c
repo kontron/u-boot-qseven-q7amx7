@@ -480,6 +480,7 @@ int ft_board_setup(void *blob, bd_t *bd)
 static struct mxc_serial_platdata mxc_serial_plat = {
 	.reg = (struct mxc_uart *)CONFIG_MXC_UART_BASE,
 	.use_dte = true,
+	.use_rtscts = true,
 };
 
 U_BOOT_DEVICE(mxc_serial) = {
