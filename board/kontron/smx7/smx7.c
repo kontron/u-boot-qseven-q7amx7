@@ -276,6 +276,11 @@ int board_phy_config(struct phy_device *phydev)
 	phy_write(phydev, MDIO_DEVAD_NONE, 0x1e, 0x2f);
 	phy_write(phydev, MDIO_DEVAD_NONE, 0x1f, 0x71b7);
 
+	/* adapt LED settings */
+	phy_write(phydev, MDIO_DEVAD_NONE, 0x16, 0x03);
+	phy_write(phydev, MDIO_DEVAD_NONE, 0x10, 0x157);
+	phy_write(phydev, MDIO_DEVAD_NONE, 0x16, 0x00);
+
 	if (phydev->drv->config)
 		phydev->drv->config(phydev);
 	return 0;
