@@ -253,7 +253,7 @@ static char *emb_eep_find_mac_in_dmi_164 (emb_eep_info *vpdi, int string_num)
 	 */
 	num = *(vpdi->block + 12 + string_num);
 
-	ptr = vpdi->block + 12 + string_num + 1;
+	ptr = vpdi->block + 12 + string_num + numOfMacs;
 	tmp_num = 1;
 	while (tmp_num < num) {
 		ptr += strlen (ptr) + 1;
@@ -374,7 +374,7 @@ static int emb_eep_init (emb_eep_info *vpdi)
 /*
  * initialize environment from embedded EEPROM
  */
-void emb_eep_init_r(int eeprom_num_serial, int eeprom_num_eth)
+void emb_eep_init_r(int eeprom_num_serial, int eeprom_num_eth, int num_of_macs)
 {
 	char vpd_header[0x10];
 	char vpd_block[CONFIG_EMB_EEP_I2C_EEPROM_SIZE];
@@ -406,6 +406,26 @@ void emb_eep_init_r(int eeprom_num_serial, int eeprom_num_eth)
 	 * Import eth addresses to environment
 	 */
 	emb_eep_import_ethaddr (&vpdi, "ethaddr", 1, D_ETHADDR);
+
+#if defined(CONFIG_HAS_ETH1)
+	if (num_of_macs >= 2)
+		emb_eep_import_ethaddr (&vpdi, "eth1addr", 2, D_ETH1ADDR);
+#endif
+
+#if defined(CONFIG_HAS_ETH2)
+	if (num_of_macs >= 3)
+		emb_eep_import_ethaddr (&vpdi, "eth2addr", 3, D_ETH1ADDR);
+#endif
+
+#if defined(CONFIG_HAS_ETH3)
+	if (num_of_macs >= 4)
+		emb_eep_import_ethaddr (&vpdi, "eth3addr", 4, D_ETH1ADDR);
+#endif
+
+#if defined(CONFIG_HAS_ETH4)
+	if (num_of_macs >= 5)
+		emb_eep_import_ethaddr (&vpdi, "eth4addr", 5, D_ETH1ADDR);
+#endif
 
 	return;
 }

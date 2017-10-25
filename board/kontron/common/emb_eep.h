@@ -32,7 +32,7 @@ typedef struct {
 #define BLOCK_ID_CRC	(0xF2)
 #define BLOCK_ID_SMBIOS	(0xD0)
 
-extern void emb_eep_init_r(int eeprom_num_serial, int eeprom_num_eth);
+extern void emb_eep_init_r(int eeprom_num_serial, int eeprom_num_eth, int num_of_macs);
 extern char * emb_eep_find_string_in_dmi (int eeprom_num, int dmi_num, int string_num);
 
 #endif /* EMB_EEP_H */
