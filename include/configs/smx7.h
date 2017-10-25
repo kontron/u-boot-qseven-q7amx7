@@ -48,8 +48,10 @@
 #define CONFIG_EMB_EEP_I2C_EEPROM_SIZE			0x1000
 
 #define CONFIG_HAS_ETH0
+#define CONFIG_HAS_ETH1
 
 #define D_ETHADDR                       "02:00:00:01:00:44"
+#define D_ETH1ADDR                      "02:00:00:01:00:45"
 #endif
 
 /******************************************************************************
