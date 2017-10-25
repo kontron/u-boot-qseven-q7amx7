@@ -300,10 +300,10 @@ int board_early_init_f(void)
 	BOARD_InitPins();
 	BOARD_FixupPins();
 
-	setup_i2c(0, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info1);
-	setup_i2c(1, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info2);
-	setup_i2c(2, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info3);
-	setup_i2c(3, CONFIG_SYS_I2C_SPEED, 0x7f, &i2c_pad_info4);
+	setup_i2c(0, CONFIG_SYS_MXC_I2C1_SPEED, 0x7f, &i2c_pad_info1);
+	setup_i2c(1, CONFIG_SYS_MXC_I2C2_SPEED, 0x7f, &i2c_pad_info2);
+	setup_i2c(2, CONFIG_SYS_MXC_I2C3_SPEED, 0x7f, &i2c_pad_info3);
+	setup_i2c(3, CONFIG_SYS_MXC_I2C4_SPEED, 0x7f, &i2c_pad_info4);
 
 #if defined(CONFIG_KEX_ARM_PLL_SPEED) && defined(CONFIG_SPL_BUILD)
 	/* increase CPU speed only in SPL and only on dual modules */

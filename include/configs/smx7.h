@@ -50,8 +50,6 @@
 #define CONFIG_HAS_ETH0
 
 #define D_ETHADDR                       "02:00:00:01:00:44"
-#define CONFIG_SAP_NAME                 "SK-FIRM-UBOOT-SMX7"
-#define CONFIG_SAP_NUM                  "1060-xxxx"
 #endif
 
 /******************************************************************************
@@ -87,10 +85,13 @@
 #define CONFIG_SYS_I2C_MXC
 #define CONFIG_I2C_MULTI_BUS
 #define CONFIG_SYS_I2C_MXC_I2C1         /* enable I2C bus 1 */
+#define CONFIG_SYS_MXC_I2C1_SPEED	100000
 #define CONFIG_SYS_I2C_MXC_I2C2         /* enable I2C bus 2 */
+#define CONFIG_SYS_MXC_I2C2_SPEED	100000
 #define CONFIG_SYS_I2C_MXC_I2C3         /* enable I2C bus 3 */
+#define CONFIG_SYS_MXC_I2C3_SPEED	100000
 #define CONFIG_SYS_I2C_MXC_I2C4         /* enable I2C bus 4 */
-#define CONFIG_SYS_I2C_SPEED            100000
+#define CONFIG_SYS_MXC_I2C4_SPEED	100000
 
 #define CONFIG_SUPPORT_EMMC_BOOT        /* eMMC specific */
 #define CONFIG_SYS_MMC_IMG_LOAD_PART    1
