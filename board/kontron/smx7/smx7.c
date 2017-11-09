@@ -392,25 +392,32 @@ static int imx_set_usb_hsic_power(void)
 
 #define CONFIG_KEX_USBHUB_I2C_ADDR 0x2d
 
-int board_ehci_hcd_init(int port)
+static int attach_usb_hub(void)
 {
 	uint8_t usbattach_cmd[] = {0xaa, 0x55, 0x00};
 
+	/* reset USBHUB */
+	gpio_direction_output(IMX_GPIO_NR(1, 0), 0);
+	udelay(1000);
+	/* remove USBHUB reset */
+	gpio_direction_output(IMX_GPIO_NR(1, 0), 1);
+	udelay(250000);
+
+	i2c_set_bus_num(1);
+	if (i2c_probe(CONFIG_KEX_USBHUB_I2C_ADDR)) {
+		printf("USBHUB not found\n");
+		return 0;
+	}
+	i2c_write(CONFIG_KEX_USBHUB_I2C_ADDR, 0, 0, usbattach_cmd, 3);
+
+	return 0;
+}
+
+int board_ehci_hcd_init(int port)
+{
 	debug("%s: port = %d\n", __func__, port);
 	if (port == 2) {
-		/* reset USBHUB */
-		gpio_direction_output(IMX_GPIO_NR(1, 0), 0);
-		udelay(1000);
-		/* remove USBHUB reset */
-		gpio_direction_output(IMX_GPIO_NR(1, 0), 1);
-		udelay(250000);
-
-		i2c_set_bus_num(1);
-		if (i2c_probe(CONFIG_KEX_USBHUB_I2C_ADDR)) {
-			printf("USBHUB not found\n");
-			return 0;
-		}
-		i2c_write(CONFIG_KEX_USBHUB_I2C_ADDR, 0, 0, usbattach_cmd, 3);
+		attach_usb_hub();
 	}
 
 	return 0;
@@ -418,6 +425,7 @@ int board_ehci_hcd_init(int port)
 
 int misc_init_r(void)
 {
+	attach_usb_hub();
 	imx_set_usb_hsic_power();
 
 #ifdef CONFIG_EMB_EEP_SPI
