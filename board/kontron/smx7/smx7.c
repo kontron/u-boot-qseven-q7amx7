@@ -576,6 +576,12 @@ char *getRevision (int eeprom_num)
 {
 	return (emb_eep_find_string_in_dmi(eeprom_num, 2, 3));
 }
+
+char *getMacAddress (int eeprom_num, int eth_num)
+{
+	return (emb_eep_find_mac_in_dmi (eeprom_num, eth_num));
+}
+
 #endif
 
 #ifdef CONFIG_SPL_BUILD
