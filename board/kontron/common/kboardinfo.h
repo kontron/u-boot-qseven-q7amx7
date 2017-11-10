@@ -29,5 +29,6 @@ char *getManufacturer (int);
 char *getProductName (int);
 char *getManufacturerDate (int);
 char *getRevision (int);
+char *getMacAddress (int, int);
 
 #endif /* __KBOARINFO_H */

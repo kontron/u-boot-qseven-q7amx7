@@ -33,6 +33,7 @@ int EMB_EEP_I2C_EEPROM_BUS_NUM_1;
 int EMB_EEP_I2C_EEPROM_BUS_NUM_2;
 
 static int emb_eep_init (emb_eep_info *vpdi);
+static char *emb_eep_find_mac_in_dmi_164 (emb_eep_info *vpdi, int string_num);
 
 static int i2c_read_emb (emb_eep_info *vpdi, int offset, unsigned char *buffer, int len)
 {
@@ -132,6 +133,23 @@ static int emb_eep_find_block(emb_eep_info *vpdi, int idx, int block_id)
 	}
 	else
 		return -1;
+}
+
+char * emb_eep_find_mac_in_dmi (int eeprom_num, int eth_num)
+{
+	char vpd_header[0x10];
+	char vpd_block[CONFIG_EMB_EEP_I2C_EEPROM_SIZE];
+	emb_eep_info vpdi;
+
+	vpdi.eeprom_num = eeprom_num;
+	vpdi.block = &vpd_block[0];
+	vpdi.header = &vpd_header[0];
+
+	if (emb_eep_init (&vpdi) != 0) {
+		return NULL;
+	}
+
+	return emb_eep_find_mac_in_dmi_164(&vpdi, eth_num);
 }
 
 char * emb_eep_find_string_in_dmi (int eeprom_num, int dmi_num, int string_num)

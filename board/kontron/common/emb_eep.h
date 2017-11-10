@@ -34,5 +34,6 @@ typedef struct {
 
 extern void emb_eep_init_r(int eeprom_num_serial, int eeprom_num_eth, int num_of_macs);
 extern char * emb_eep_find_string_in_dmi (int eeprom_num, int dmi_num, int string_num);
+extern char * emb_eep_find_mac_in_dmi (int eeprom_num, int eth_num);
 
 #endif /* EMB_EEP_H */

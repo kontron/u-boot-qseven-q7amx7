@@ -56,6 +56,21 @@ int do_kboardinfo (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv [])
 	printf ("Product name:        %s\n", print_if_avail (getProductName(1)));
 	printf ("Material number:     %s\n", print_if_avail (getSapId(1)));
 	printf ("Serial number:       %s\n", getSerNo ());
+#if defined(CONFIG_HAS_ETH0)
+	printf ("MAC0 (ethaddr):      %s\n", getMacAddress (1, 1));
+#endif
+#if defined(CONFIG_HAS_ETH1)
+	printf ("MAC1 (eth1addr):     %s\n", getMacAddress (1, 2));
+#endif
+#if defined(CONFIG_HAS_ETH2)
+	printf ("MAC2 (eth2addr):     %s\n", getMacAddress (1, 3));
+#endif
+#if defined(CONFIG_HAS_ETH3)
+	printf ("MAC3 (eth3addr):     %s\n", getMacAddress (1, 4));
+#endif
+#if defined(CONFIG_HAS_ETH4)
+	printf ("MAC4 (eth4addr):     %s\n", getMacAddress (1, 5));
+#endif
 	printf ("Manufacturer Date:   %s\n", print_if_avail (getManufacturerDate(1)));
 	printf ("Revision:            %s\n", print_if_avail (getRevision(1)));
 #endif
