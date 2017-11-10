@@ -466,6 +466,20 @@ int misc_init_r(void)
 
 	/* snvs_lpgpr_set(0x12345678); */
 
+	/* init GPIO lines to ground */
+	gpio_direction_output(IMX_GPIO_NR(1,8), 0);	/* GPIO5: PWM_OUT */
+	gpio_direction_output(IMX_GPIO_NR(3,5), 0);	/* GPIO0: CAM0_PWR */
+	gpio_direction_output(IMX_GPIO_NR(3,6), 0);	/* GPIO1: CAM1_PWR */
+	gpio_direction_output(IMX_GPIO_NR(3,7), 0);	/* GPIO2: CAM0_RST */
+	gpio_direction_output(IMX_GPIO_NR(3,8), 0);	/* GPIO3: CAM1_RST */
+	gpio_direction_output(IMX_GPIO_NR(3,9), 0);	/* GPIO4: HDA_RST */
+	gpio_direction_output(IMX_GPIO_NR(3,10), 0);	/* GPIO6: TACHIN */
+	gpio_direction_output(IMX_GPIO_NR(3,11), 0);	/* GPIO7 */
+	gpio_direction_output(IMX_GPIO_NR(3,12), 0);	/* GPIO8 */
+	gpio_direction_output(IMX_GPIO_NR(4,4), 0);	/* GPIO9 */
+	gpio_direction_output(IMX_GPIO_NR(4,5), 0);	/* GPIO10 */
+	gpio_direction_output(IMX_GPIO_NR(3,15), 0);	/* GPIO11 */
+
 	return 0;
 }
 
