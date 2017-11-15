@@ -504,8 +504,10 @@ int board_late_init(void)
 		}
 
 	}
+#if defined(CONFIG_KEX_EEP_BOOTCOUNTER)
+	emb_eep_update_bootcounter(1);
 #endif
-
+#endif
 	return 0;
 }
 
@@ -579,7 +581,20 @@ char *getRevision (int eeprom_num)
 
 char *getMacAddress (int eeprom_num, int eth_num)
 {
-	return (emb_eep_find_mac_in_dmi (eeprom_num, eth_num));
+	return (emb_eep_find_mac_in_dmi(eeprom_num, eth_num));
+}
+
+uint64_t getBootCounter (int eeprom_num)
+{
+	uint64_t bc;
+	char *tmp;
+
+	tmp = emb_eep_find_string_in_dmi(eeprom_num, 161, 1);
+	if (tmp != NULL) {
+		memcpy(&bc, tmp, sizeof(uint64_t));
+		return (be64_to_cpu(bc));
+	} else
+		return (-1ULL);
 }
 
 #endif

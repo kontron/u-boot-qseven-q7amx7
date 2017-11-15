@@ -27,4 +27,8 @@ config KEX_ARM_PLL_SPEED
 	 i.MX7D CPUs.
 	 fout = fin * div_sel / 2
 
+config KEX_EEP_BOOTCOUNTER
+	bool "KEU EEPROM boot counter support"
+	default y
+
 endif
