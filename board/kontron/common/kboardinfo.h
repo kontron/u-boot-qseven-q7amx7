@@ -30,5 +30,6 @@ char *getProductName (int);
 char *getManufacturerDate (int);
 char *getRevision (int);
 char *getMacAddress (int, int);
+uint64_t getBootCounter (int);
 
 #endif /* __KBOARINFO_H */

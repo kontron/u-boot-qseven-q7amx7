@@ -26,8 +26,7 @@
 #include <asm/arch/clock.h>
 #include <asm/arch/sys_proto.h>
 #include "kboardinfo.h"
-#include "../common/emb_vpd.h"
-
+#include "emb_eep.h"
 
 char *print_if_avail (char *text)
 {
@@ -51,7 +50,9 @@ int do_kboardinfo (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv [])
 #endif
 
 #ifdef CONFIG_KBOARDINFO_MODULE
-	printf ("Module:\n");
+#ifdef CONFIG_KBOARDINFO_CARRIER
+	printf ("Module data:\n");
+#endif
 	printf ("Manufacturer:        %s\n", print_if_avail (getManufacturer(1)));
 	printf ("Product name:        %s\n", print_if_avail (getProductName(1)));
 	printf ("Material number:     %s\n", print_if_avail (getSapId(1)));
@@ -73,9 +74,16 @@ int do_kboardinfo (cmd_tbl_t *cmdtp, int flag, int argc, char * const argv [])
 #endif
 	printf ("Manufacturer Date:   %s\n", print_if_avail (getManufacturerDate(1)));
 	printf ("Revision:            %s\n", print_if_avail (getRevision(1)));
+#if defined(CONFIG_KEX_EEP_BOOTCOUNTER)
+	uint64_t bc = getBootCounter(1);
+	if (bc & SIGN_64BIT)
+		printf ("Boot Counter:        Invalid\n");
+	else
+		printf ("Boot Counter:        %lld\n", bc);
+#endif
 #endif
 #ifdef CONFIG_KBOARDINFO_CARRIER
-	printf ("\nCarrier:\n");
+	printf ("\nCarrier data:\n");
 	printf ("Manufacturer:        %s\n", print_if_avail (getManufacturer(2)));
 	printf ("Product name:        %s\n", print_if_avail (getProductName(2)));
 	printf ("Material number:     %s\n", print_if_avail (getSapId(2)));
