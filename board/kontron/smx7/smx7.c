@@ -582,6 +582,27 @@ int checkboard(void)
 #if defined(CONFIG_OF_BOARD_SETUP)
 int ft_board_setup(void *blob, bd_t *bd)
 {
+	int err;
+	int nodeoffset;
+	phys_addr_t base;
+	phys_size_t size;
+
+	base = getenv_bootm_low();
+	size = getenv_bootm_size();
+
+	fdt_fixup_memory(blob, (u64)base, (u64)size);
+	nodeoffset = fdt_find_or_add_subnode(blob, 0, "memory");
+	if (nodeoffset < 0)
+		return 1;
+
+	err = fdt_find_and_setprop(blob, "/memory", "mem-type", "ddr3",
+	                           sizeof("ddr3"), 1);
+	if (err < 0) {
+		printf("Could not add mem-type property to memory node: %s\n",
+		       fdt_strerror(err));
+		return 1;
+	}
+
 	return 0;
 }
 #endif /* CONFIG_OF_BOARD_SETUP */
