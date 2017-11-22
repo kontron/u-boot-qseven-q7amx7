@@ -177,6 +177,7 @@
 	"pcie_a_prsnt=yes" "\0" \
 	"pcie_b_prsnt=yes" "\0" \
 	"pcie_c_prsnt=yes" "\0" \
+	"pwm_out_disable=yes" "\0" \
 	"bootscript=echo Running bootscript from mmc ...; source" "\0" \
 	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}" "\0" \
 	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}" "\0" \

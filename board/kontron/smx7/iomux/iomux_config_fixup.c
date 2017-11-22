@@ -40,6 +40,14 @@ void hsic_1p2_regulator_out(void)
 	 */
 	HW_PMU_REG_HSIC_1P2_SET(XTALOSC_BASE, 0x80000000);
 }
+
+void use_pwm1_out_as_gpio(void)
+{
+	/* 
+	 * Use PWM_OUT signal as GPIO5 instead
+	 */
+	HW_IOMUXC_SW_MUX_CTL_PAD_GPIO1_IO08_WR(IOMUXC_BASE, 0x00000000u);
+}
 /*******************************************************************************
  * EOF
  ******************************************************************************/

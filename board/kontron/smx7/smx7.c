@@ -37,6 +37,7 @@
 extern void BOARD_InitPins(void);
 extern void BOARD_FixupPins(void);
 extern void hsic_1p2_regulator_out(void);
+extern void use_pwm1_out_as_gpio(void);
 /* extern void snvs_lpgpr_set(uint32_t); */
 
 extern int EMB_EEP_I2C_EEPROM_BUS_NUM_1;
@@ -457,6 +458,10 @@ int misc_init_r(void)
 		else
 			gpio_direction_output(IMX_GPIO_NR(6,15), 1);
 	}
+
+	/* fix IOMUX configuration of PWM1_OUT for use as GPIO line if variable set */
+	if (getenv_yesno("pwm_out_disable"))
+		use_pwm1_out_as_gpio();
 
 	setenv ("core_variant", "unknown");
 	if (is_cpu_type(MXC_CPU_MX7D))
