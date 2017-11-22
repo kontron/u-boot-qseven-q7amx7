@@ -424,10 +424,66 @@ int board_ehci_hcd_init(int port)
 	return 0;
 }
 
+static void set_boot_sel(void)
+{
+	int boot_sel;
+
+	/* Get the state of the Boot Select pins */
+	gpio_direction_input(IMX_GPIO_NR(3, 24));	/* BOOT SEL 0 */
+	gpio_direction_input(IMX_GPIO_NR(3, 25));	/* BOOT SEL 1 */
+	gpio_direction_input(IMX_GPIO_NR(3, 26));	/* BOOT SEL 2 */
+
+	boot_sel = gpio_get_value(IMX_GPIO_NR(3, 24)) & 0x1;
+	boot_sel |= (gpio_get_value(IMX_GPIO_NR(3, 25)) & 0x1) << 1;
+	boot_sel |= (gpio_get_value(IMX_GPIO_NR(3, 26)) & 0x1) << 2;
+
+	/*
+	 * Jumper settings per SMARC Spec
+	 *
+	 *   BOOT_SEL2#    BOOT_SEL1#    BOOT_SEL0# Boot Source
+	 * 0  	GND           GND           GND        Carrier SATA
+	 * 1	GND           GND           Float      Carrier SD Card
+	 * 2	GND           Float         GND        Carrier eMMC Flash
+	 * 3	GND           Float         Float      Carrier SPI
+	 * 4	Float         GND           GND        Module device (NAND, NOR) - vendor specific
+	 * 5	Float         GND           Float      Remote boot (GBE, serial) - vendor specific
+	 * 6	Float         Float         GND        Module eMMC Flash
+	 * 7	Float         Float         Float      Module SPI
+	 */
+
+	switch (boot_sel) {
+		case 0:
+			setenv("boot_sel", "carrier_sata");
+			break;
+		case 1:
+			setenv("boot_sel", "carrier_sd");
+			break;
+		case 2:
+			setenv("boot_sel", "carrier_mmc");
+			break;
+		case 3:
+			setenv("boot_sel", "carrier_spi");
+			break;
+		case 4:
+			setenv("boot_sel", "module_device");
+			break;
+		case 5:
+			setenv("boot_sel", "remote");
+			break;
+		case 6:
+			setenv("boot_sel", "module_mmc");
+			break;
+		case 7:
+			setenv("boot_sel", "module_spi");
+			break;
+	}
+}
+
 int misc_init_r(void)
 {
 	attach_usb_hub();
 	imx_set_usb_hsic_power();
+	set_boot_sel();
 
 #ifdef CONFIG_EMB_EEP_SPI
 	emb_vpd_init_r();
