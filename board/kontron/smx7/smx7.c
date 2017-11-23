@@ -584,26 +584,40 @@ int ft_board_setup(void *blob, bd_t *bd)
 {
 	int err;
 	int nodeoffset;
-	phys_addr_t base;
-	phys_size_t size;
-
-	base = getenv_bootm_low();
-	size = getenv_bootm_size();
+	char *name;
+	char str_mem_type[] = "mem-type";
+	char str_mem_freq[] = "memory-frequency";
+	u64 freq = mxc_get_clock(MXC_ARM_CLK);
+	phys_addr_t base = getenv_bootm_low();
+	phys_size_t size = getenv_bootm_low();
 
 	fdt_fixup_memory(blob, (u64)base, (u64)size);
 	nodeoffset = fdt_find_or_add_subnode(blob, 0, "memory");
 	if (nodeoffset < 0)
 		return 1;
 
-	err = fdt_find_and_setprop(blob, "/memory", "mem-type", "ddr3",
+	/*
+	 * increase DT size to add sufficient space for additional properties
+	 */
+	fdt_increase_size(blob, 0x100);
+	name = str_mem_type;
+	err = fdt_find_and_setprop(blob, "/memory", name, "ddr3",
 	                           sizeof("ddr3"), 1);
-	if (err < 0) {
-		printf("Could not add mem-type property to memory node: %s\n",
-		       fdt_strerror(err));
-		return 1;
-	}
+	if (err < 0)
+		goto err;
+
+	name = str_mem_freq;
+	err = fdt_setprop_u64(blob, nodeoffset, name, freq);
+	if (err < 0)
+		goto err;
 
 	return 0;
+
+err:
+	printf("Could not set %s property to memory node: %s\n",
+	       name, fdt_strerror(err));
+
+	return 1;
 }
 #endif /* CONFIG_OF_BOARD_SETUP */
 
