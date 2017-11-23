@@ -159,7 +159,6 @@
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	UPDATE_M4_ENV \
 	"autoload=no" "\0" \
-	"bootm_boot_mode=sec" "\0" \
 	"set_fdt_file=setenv fdt_file imx7${core_variant}-samx7-${panel}.dtb;" "\0" \
 	"clear_env=sf probe 0 && sf erase " __stringify(CONFIG_ENV_OFFSET) " 10000" "\0" \
 	"console=ttymxc0" "\0" \
