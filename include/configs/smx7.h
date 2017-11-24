@@ -140,17 +140,15 @@
 
 #define UPDATE_M4_ENV \
 	"m4image=m4_qspi.bin\0" \
-	"loadm4image=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${m4image}\0" \
+	"loadm4image=load mmc 0:1 ${loadaddr} ${m4image}\0" \
 	"update_m4_from_sd=" \
-		"if sf probe 0:0; then " \
-			"if run loadm4image; then " \
-				"setexpr fw_sz ${filesize} + 0xffff; " \
-				"setexpr fw_sz ${fw_sz} / 0x10000; "	\
-				"setexpr fw_sz ${fw_sz} * 0x10000; "	\
-				"sf erase 0x0 ${fw_sz}; " \
-				"sf write ${loadaddr} 0x0 ${filesize}; " \
-			"fi; " \
-		"fi\0" \
+		"sf probe 0:0 && " \
+		"run loadm4image && " \
+		"setexpr fw_sz ${filesize} + 0xffff; "	\
+		"setexpr fw_sz ${fw_sz} / 0x10000; "	\
+		"setexpr fw_sz ${fw_sz} * 0x10000; "	\
+		"sf erase 0x0 ${fw_sz} && " \
+		"sf write ${loadaddr} 0x0 ${filesize}" "\0" \
 	"m4boot=sf probe 0:0; bootaux "__stringify(CONFIG_SYS_AUXCORE_BOOTDATA)"\0"
 #else
 #define UPDATE_M4_ENV ""
@@ -159,44 +157,34 @@
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	UPDATE_M4_ENV \
 	"autoload=no" "\0" \
-	"set_fdt_file=setenv fdt_file imx7${core_variant}-samx7-${panel}.dtb;" "\0" \
+	"set_fdtfile=setenv fdtfile imx7${core_variant}-samx7-${panel}.dtb;" "\0" \
 	"clear_env=sf probe 0 && sf erase " __stringify(CONFIG_ENV_OFFSET) " 10000" "\0" \
 	"console=ttymxc0" "\0" \
 	"fdt_addr=0x83000000" "\0" \
 	"fdt_high=0xffffffff" "\0" \
 	"image=zImage" "\0" \
 	"initrd_high=0xffffffff" "\0" \
-	"loadbootscript=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${script};" "\0" \
-	"mmcargs=setenv bootargs console=${console},${baudrate} root=${mmcroot}" "\0" \
-	"mmcdev="__stringify(CONFIG_SYS_MMC_ENV_DEV)"\0" \
-	"mmcpart=" __stringify(CONFIG_SYS_MMC_IMG_LOAD_PART) "\0" \
-	"mmcroot=" CONFIG_MMCROOT " rootwait rw" "\0" \
-	"nfsrootpath=/srv/export/samx7" "\0" \
 	"panel=ld101" "\0" \
 	"pcie_a_prsnt=yes" "\0" \
 	"pcie_b_prsnt=yes" "\0" \
 	"pcie_c_prsnt=yes" "\0" \
 	"pwm_out_disable=yes" "\0" \
-	"bootscript=echo Running bootscript from mmc ...; source" "\0" \
-	"loadimage=fatload mmc ${mmcdev}:${mmcpart} ${loadaddr} ${image}" "\0" \
-	"loadfdt=fatload mmc ${mmcdev}:${mmcpart} ${fdt_addr} ${fdt_file}" "\0" \
-	"script=boot.scr\0" \
+	"loadimage=load mmc ${bdev}:${bpart} ${loadaddr} /boot/${image}" "\0" \
+	"loadfdt=load mmc ${bdev}:${bpart} ${fdt_addr} /boot/${fdtfile}" "\0" \
+	"mmcargs=setenv bootargs console=${console},${baudrate} root=${mmcroot}" "\0" \
+	"mmcroot=/dev/mmcblk2p1 rootwait rw" "\0" \
 	"mmcboot=echo Booting from mmc ...; " \
-		"run loadimage && run mmcargs && run set_fdt_file && " \
-		"if run loadfdt; then " \
-			"bootz ${loadaddr} - ${fdt_addr}; " \
-		"else " \
-			"echo WARN: Cannot load the DT; " \
-		"fi;" "\0" \
+		"setenv bdev 1 && setenv bpart 1 && mmc dev ${bdev} && " \
+		"run loadimage && run mmcargs && run set_fdtfile && " \
+		"run loadfdt && bootz ${loadaddr} - ${fdt_addr} || " \
+		"echo WARN: Cannot load the DT && false" "\0" \
 	"netargs=setenv bootargs console=${console},${baudrate} root=/dev/nfs ip=dhcp " \
 		"nfsroot=${serverip}:${nfsrootpath},v3,tcp mipi_dsi_samsung.lvds_freq=50" "\0" \
+	"nfsrootpath=/srv/export/samx7" "\0" \
 	"netboot=echo Booting from net ...; " \
-		"bootp && run netargs && tftp ${image} && run set_fdt_file && " \
-		"if tftp ${fdt_addr} ${fdt_file}; then " \
-			"bootz ${loadaddr} - ${fdt_addr}; " \
-		"else " \
-			"echo WARN: Cannot load the DT; " \
-		"fi;" "\0" \
+		"bootp && run netargs && tftp ${image} && run set_fdtfile && " \
+		"tftp ${fdt_addr} ${fdtfile} && bootz ${loadaddr} - ${fdt_addr} || " \
+		"echo WARN: Cannot load the DT && false" "\0" \
 	"qspi_header_file=qspi-header.bin" "\0" \
 	"uboot_update_file=u-boot-smx7-spl.imx" "\0" \
 	"uboot_install=bootp && tftp 80800000 ${qspi_header_file} && tftp 88000000 ${uboot_update_file} && " \
@@ -206,16 +194,7 @@
 		"sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0"
 
 #define CONFIG_BOOTCOMMAND \
-	"mmc dev ${mmcdev}; " \
-	"if mmc rescan; then " \
-		"if run loadbootscript; then " \
-			"run bootscript; " \
-		"else " \
-			"run mmcboot || run netboot; " \
-		"fi; " \
-	"else " \
-		"run netboot; " \
-	"fi;"
+		"run mmcboot || run netboot"
 
 #define CONFIG_SYS_MEMTEST_START	0x80000000
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + 0x20000000)
@@ -249,10 +228,6 @@
 #endif
 
 #define CONFIG_SYS_FSL_USDHC_NUM    2
-
-#define CONFIG_SYS_MMC_ENV_DEV      0                   /* USDHC1 */
-#define CONFIG_SYS_MMC_ENV_PART     0                   /* user area */
-#define CONFIG_MMCROOT              "/dev/mmcblk0p2"    /* USDHC1 */
 
 #define CONFIG_IMX_THERMAL
 
