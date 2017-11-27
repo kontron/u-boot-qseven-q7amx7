@@ -169,22 +169,40 @@
 	"pcie_b_prsnt=yes" "\0" \
 	"pcie_c_prsnt=yes" "\0" \
 	"pwm_out_disable=yes" "\0" \
-	"loadimage=load mmc ${bdev}:${bpart} ${loadaddr} /boot/${image}" "\0" \
-	"loadfdt=load mmc ${bdev}:${bpart} ${fdt_addr} /boot/${fdtfile}" "\0" \
-	"mmcargs=setenv bootargs console=${console},${baudrate} root=${mmcroot}" "\0" \
+	"bootfailed=echo Booting failed from all boot sources && false" "\0" \
+	"bootos=run setbootargs && " \
+		"run loadimage && " \
+		"run loadfdt && " \
+		"bootz ${loadaddr} - ${fdt_addr} || false" "\0" \
+	"bootsel_boot=echo BOOT_SEL ${boot_sel} selected && run ${boot_sel}_boot" "\0" \
+	"module_mmc_boot=run mmcboot" "\0" \
+	"module_spi_boot=run mmcboot" "\0" \
+	"loadimage=load ${intf} ${bdev}:${bpart} ${loadaddr} /boot/${image}" "\0" \
+	"loadfdt=run set_fdtfile && load ${intf} ${bdev}:${bpart} ${fdt_addr} /boot/${fdtfile}" "\0" \
+	"setbootargs=setenv bootargs console=${console},${baudrate} root=${rootpath}" "\0" \
 	"mmcroot=/dev/mmcblk2p1 rootwait rw" "\0" \
-	"mmcboot=echo Booting from mmc ...; " \
-		"setenv bdev 1 && setenv bpart 1 && mmc dev ${bdev} && " \
-		"run loadimage && run mmcargs && run set_fdtfile && " \
-		"run loadfdt && bootz ${loadaddr} - ${fdt_addr} || " \
-		"echo WARN: Cannot load the DT && false" "\0" \
-	"netargs=setenv bootargs console=${console},${baudrate} root=/dev/nfs ip=dhcp " \
+	"mmcboot=echo Booting from mmc ... && " \
+		"setenv bdev 1 && setenv bpart 1 && setenv intf mmc && " \
+		"mmc dev ${bdev} && setenv rootpath ${mmcroot} && " \
+		"run bootos" "\0" \
+	"netsetbootargs=bootp && setenv bootargs console=${console},${baudrate} root=/dev/nfs ip=dhcp " \
 		"nfsroot=${serverip}:${nfsrootpath},v3,tcp mipi_dsi_samsung.lvds_freq=50" "\0" \
 	"nfsrootpath=/srv/export/samx7" "\0" \
 	"netboot=echo Booting from net ...; " \
-		"bootp && run netargs && tftp ${image} && run set_fdtfile && " \
-		"tftp ${fdt_addr} ${fdtfile} && bootz ${loadaddr} - ${fdt_addr} || " \
-		"echo WARN: Cannot load the DT && false" "\0" \
+		"run netsetbootargs && " \
+		"tftp ${loadaddr} ${image} && " \
+		"run set_fdtfile && tftp ${fdt_addr} ${fdtfile} && " \
+		"bootz ${loadaddr} - ${fdt_addr} || false" "\0" \
+	"sdroot=/dev/mmcblk0p1 rootwait rw" "\0" \
+	"sdboot=echo Booting from SD card ... && " \
+		"setenv bdev 0 && setenv bpart 1 && setenv intf mmc && " \
+		"mmc dev ${bdev} && setenv rootpath ${sdroot} && " \
+		"run bootos" "\0" \
+	"usbroot=/dev/sda1 rootwait rw" "\0" \
+	"usbboot=echo Booting from USB ... && " \
+		"setenv bdev 0 && setenv bpart 1 && setenv intf usb && " \
+		"usb start && usb dev ${bdev} && setenv rootpath ${usbroot} && " \
+		"run bootos" "\0" \
 	"qspi_header_file=qspi-header.bin" "\0" \
 	"uboot_update_file=u-boot-smx7-spl.imx" "\0" \
 	"uboot_install=bootp && tftp 80800000 ${qspi_header_file} && tftp 88000000 ${uboot_update_file} && " \
@@ -194,7 +212,7 @@
 		"sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0"
 
 #define CONFIG_BOOTCOMMAND \
-		"run mmcboot || run netboot"
+		"run mmcboot || run sdboot || run usbboot || run netboot || run bootfailed"
 
 #define CONFIG_SYS_MEMTEST_START	0x80000000
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + 0x20000000)
