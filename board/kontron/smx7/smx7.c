@@ -677,7 +677,13 @@ char *getRevision (int eeprom_num)
 
 char *getMacAddress (int eeprom_num, int eth_num)
 {
-	return (emb_eep_find_mac_in_dmi(eeprom_num, eth_num));
+	char *macaddress;
+
+	macaddress = emb_eep_find_mac_in_dmi(eeprom_num, eth_num);
+	if (macaddress != NULL)
+		return (macaddress);
+	else
+		return "na";
 }
 
 uint64_t getBootCounter (int eeprom_num)
