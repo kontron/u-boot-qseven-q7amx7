@@ -587,6 +587,8 @@ int ft_board_setup(void *blob, bd_t *bd)
 	char *name;
 	char str_mem_type[] = "mem-type";
 	char str_mem_freq[] = "memory-frequency";
+	char str_pwm1[] = "/soc/aips-bus@30400000/pwm@30660000";
+	char str_ok[] = "okay";
 	u64 freq = mxc_get_clock(MXC_ARM_CLK);
 	phys_addr_t base = getenv_bootm_low();
 	phys_size_t size = getenv_bootm_low();
@@ -610,6 +612,14 @@ int ft_board_setup(void *blob, bd_t *bd)
 	err = fdt_setprop_u64(blob, nodeoffset, name, freq);
 	if (err < 0)
 		goto err;
+
+	/* check pwm_out_disable and enable pwm if needed */
+	if (!getenv_yesno("pwm_out_disable")) {
+		fdt_find_and_setprop(blob, "/pwm-fan", "status",
+		                     str_ok, sizeof(str_ok), 0);
+		fdt_find_and_setprop(blob, str_pwm1, "status",
+		                     str_ok, sizeof(str_ok), 0);
+	}
 
 	return 0;
 
