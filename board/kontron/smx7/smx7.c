@@ -585,7 +585,7 @@ int ft_board_setup(void *blob, bd_t *bd)
 	int err;
 	int nodeoffset;
 	char *name;
-	char str_mem_type[] = "mem-type";
+	char str_mem_type[] = "memory-type";
 	char str_mem_freq[] = "memory-frequency";
 	char str_pwm1[] = "/soc/aips-bus@30400000/pwm@30660000";
 	char str_ok[] = "okay";
@@ -603,8 +603,8 @@ int ft_board_setup(void *blob, bd_t *bd)
 	 */
 	fdt_increase_size(blob, 0x100);
 	name = str_mem_type;
-	err = fdt_find_and_setprop(blob, "/memory", name, "ddr3",
-	                           sizeof("ddr3"), 1);
+	err = fdt_find_and_setprop(blob, "/memory", name, "DDR3",
+	                           sizeof("DDR3"), 1);
 	if (err < 0)
 		goto err;
 
