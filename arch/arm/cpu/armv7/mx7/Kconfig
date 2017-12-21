@@ -46,6 +46,14 @@ config TARGET_SMX7
 	select DM
 	select DM_THERMAL
 
+config TARGET_Q7AMX7
+	bool "Kontron Q7AMX7"
+	select BOARD_LATE_INIT
+	select SUPPORT_SPL
+	select MX7D
+	select DM
+	select DM_THERMAL
+
 endchoice
 
 config SYS_SOC
@@ -53,6 +61,7 @@ config SYS_SOC
 
 source "board/freescale/mx7dsabresd/Kconfig"
 source "board/kontron/smx7/Kconfig"
+source "board/kontron/q7amx7/Kconfig"
 source "board/toradex/colibri_imx7/Kconfig"
 source "board/warp7/Kconfig"
 

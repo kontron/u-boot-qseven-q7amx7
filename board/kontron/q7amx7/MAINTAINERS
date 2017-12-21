@@ -1,0 +1,6 @@
+KONTRON Q7AMX7 BOARD
+M:	Shui Lei Ng <ShuiLei.Ng@kontron.com>
+S:	Maintained
+F:	board/kontron/q7amx7
+F:	include/configs/q7amx7.h
+F:	configs/q7amx7_defconfig
