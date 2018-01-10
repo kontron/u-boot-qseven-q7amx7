@@ -54,14 +54,14 @@ DECLARE_GLOBAL_DATA_PTR;
 /* I2C1 for PMIC */
 static struct i2c_pads_info i2c_pad_info1 = {
 	.scl = {
-		.i2c_mode = MX7D_PAD_UART1_RX_DATA__I2C1_SCL | I2C_PAD,
-		.gpio_mode = MX7D_PAD_UART1_RX_DATA__GPIO4_IO0 | I2C_PAD,
-		.gp = IMX_GPIO_NR(4, 0),
+		.i2c_mode = MX7D_PAD_I2C1_SCL__I2C1_SCL | I2C_PAD,
+		.gpio_mode = MX7D_PAD_I2C1_SCL__GPIO4_IO8 | I2C_PAD,
+		.gp = IMX_GPIO_NR(4, 8),
 	},
 	.sda = {
-		.i2c_mode = MX7D_PAD_UART1_TX_DATA__I2C1_SDA | I2C_PAD,
-		.gpio_mode = MX7D_PAD_UART1_TX_DATA__GPIO4_IO1 | I2C_PAD,
-		.gp = IMX_GPIO_NR(4, 1),
+		.i2c_mode = MX7D_PAD_I2C1_SDA__I2C1_SDA | I2C_PAD,
+		.gpio_mode = MX7D_PAD_I2C1_SDA__GPIO4_IO9 | I2C_PAD,
+		.gp = IMX_GPIO_NR(4, 9),
 	},
 };
 
