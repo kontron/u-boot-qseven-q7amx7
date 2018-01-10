@@ -236,7 +236,7 @@ int board_eth_init(bd_t *bis)
 	udelay(10);
 
 	/* remove PHY reset */
-	gpio_direction_output(IMX_GPIO_NR(3, 21), 1);
+	gpio_direction_output(IMX_GPIO_NR(4, 4), 1);
 
 	/* FEC0 is connected to PHY#0 */
 	ret = fecmxc_initialize_multi(bis, 0, 0, IMX_FEC_BASE);
