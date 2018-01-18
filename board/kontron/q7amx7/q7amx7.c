@@ -444,19 +444,19 @@ int misc_init_r(void)
 	/* set PCIE present signal according to environment settings */
 	if (is_cpu_type(MXC_CPU_MX7D)) {
 		if (getenv_yesno("pcie_a_prsnt"))
-			gpio_direction_output(IMX_GPIO_NR(3,16), 0);
+			gpio_direction_output(IMX_GPIO_NR(2,24), 0);
 		else
-			gpio_direction_output(IMX_GPIO_NR(3,16), 1);
+			gpio_direction_output(IMX_GPIO_NR(2,24), 1);
 
 		if (getenv_yesno("pcie_b_prsnt"))
-			gpio_direction_output(IMX_GPIO_NR(3,22), 0);
+			gpio_direction_output(IMX_GPIO_NR(2,25), 0);
 		else
-			gpio_direction_output(IMX_GPIO_NR(3,22), 1);
+			gpio_direction_output(IMX_GPIO_NR(2,25), 1);
 
 		if (getenv_yesno("pcie_c_prsnt"))
-			gpio_direction_output(IMX_GPIO_NR(6,15), 0);
+			gpio_direction_output(IMX_GPIO_NR(2,26), 0);
 		else
-			gpio_direction_output(IMX_GPIO_NR(6,15), 1);
+			gpio_direction_output(IMX_GPIO_NR(2,26), 1);
 	}
 
 	/* fix IOMUX configuration of PWM1_OUT for use as GPIO line if variable set */
