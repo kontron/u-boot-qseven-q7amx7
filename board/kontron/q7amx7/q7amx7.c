@@ -29,6 +29,7 @@
 #include <usb/ehci-ci.h>
 #include <dm.h>
 #include <dm/platform_data/serial_mxc.h>
+#include <version.h>
 
 /* #include "../common/emb_vpd.h" */
 #include "../common/emb_eep.h"
@@ -472,18 +473,14 @@ int misc_init_r(void)
 	/* snvs_lpgpr_set(0x12345678); */
 
 	/* init GPIO lines to ground */
-	gpio_direction_output(IMX_GPIO_NR(1,8), 0);	/* GPIO5: PWM_OUT */
-	gpio_direction_output(IMX_GPIO_NR(3,5), 0);	/* GPIO0: CAM0_PWR */
-	gpio_direction_output(IMX_GPIO_NR(3,6), 0);	/* GPIO1: CAM1_PWR */
-	gpio_direction_output(IMX_GPIO_NR(3,7), 0);	/* GPIO2: CAM0_RST */
-	gpio_direction_output(IMX_GPIO_NR(3,8), 0);	/* GPIO3: CAM1_RST */
-	gpio_direction_output(IMX_GPIO_NR(3,9), 0);	/* GPIO4: HDA_RST */
-	gpio_direction_output(IMX_GPIO_NR(3,10), 0);	/* GPIO6: TACHIN */
-	gpio_direction_output(IMX_GPIO_NR(3,11), 0);	/* GPIO7 */
-	gpio_direction_output(IMX_GPIO_NR(3,12), 0);	/* GPIO8 */
-	gpio_direction_output(IMX_GPIO_NR(4,4), 0);	/* GPIO9 */
-	gpio_direction_output(IMX_GPIO_NR(4,5), 0);	/* GPIO10 */
-	gpio_direction_output(IMX_GPIO_NR(3,15), 0);	/* GPIO11 */
+	gpio_direction_output(IMX_GPIO_NR(2,16), 0);	/*GPIO4*/
+	gpio_direction_output(IMX_GPIO_NR(2,17), 0);	/*GPIO5*/
+	gpio_direction_output(IMX_GPIO_NR(2,18), 0);	/*GPIO6*/
+	gpio_direction_output(IMX_GPIO_NR(2,19), 0);	/*GPIO7*/
+	gpio_direction_output(IMX_GPIO_NR(2,20), 0);	/*GPIO0*/
+	gpio_direction_output(IMX_GPIO_NR(2,21), 0);	/*GPIO1*/
+	gpio_direction_output(IMX_GPIO_NR(2,22), 0);	/*GPIO2*/
+	gpio_direction_output(IMX_GPIO_NR(2,23), 0);	/*GPIO3*/
 
 	return 0;
 }
@@ -524,19 +521,25 @@ int checkboard(void)
 }
 
 #if defined(CONFIG_OF_BOARD_SETUP)
+const char ft_version_string[] = U_BOOT_VERSION_STRING;
+
 int ft_board_setup(void *blob, bd_t *bd)
 {
 	int err;
 	int nodeoffset;
+	int create = 1;
 	char *name;
 	char str_mem_type[] = "memory-type";
 	char str_mem_freq[] = "memory-frequency";
 	char str_pwm1[] = "/soc/aips-bus@30400000/pwm@30660000";
 	char str_ok[] = "okay";
+
 	u64 freq = mxc_get_clock(MXC_ARM_CLK);
 	phys_addr_t base = getenv_bootm_low();
-	phys_size_t size = getenv_bootm_low();
+	phys_size_t size = getenv_bootm_size();
 
+	debug("/memory device tree settings: base=0x%08x, size=0x%08x\n",
+	      (u32)base, (u32)size);
 	fdt_fixup_memory(blob, (u64)base, (u64)size);
 	nodeoffset = fdt_find_or_add_subnode(blob, 0, "memory");
 	if (nodeoffset < 0)
@@ -555,6 +558,14 @@ int ft_board_setup(void *blob, bd_t *bd)
 	name = str_mem_freq;
 	err = fdt_setprop_u64(blob, nodeoffset, name, freq);
 	if (err < 0)
+		goto err;
+
+	printf("bootloader version: %s\n", ft_version_string);
+	err = fdt_find_and_setprop(blob, "/chosen", "u-boot,version",
+	                     ft_version_string,
+	                     sizeof(ft_version_string), create);
+
+	if (err<0)
 		goto err;
 
 	/* check pwm_out_disable and enable pwm if needed */
