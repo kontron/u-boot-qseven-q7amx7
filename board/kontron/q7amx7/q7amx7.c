@@ -244,12 +244,6 @@ int board_eth_init(bd_t *bis)
 	if (ret)
 		printf("FEC0 MXC: %s:failed\n", __func__);
 
-	if (is_cpu_type(MXC_CPU_MX7D)) {
-		/* FEC1 is connected to PHY#1 */
-		ret = fecmxc_initialize_multi(bis, 1, 1, IMX_FEC_BASE);
-		if (ret)
-			printf("FEC1 MXC: %s:failed\n", __func__);
-	}
 
 	return ret;
 }
@@ -436,10 +430,7 @@ int misc_init_r(void)
 
 #ifdef CONFIG_EMB_EEP_I2C_EEPROM
 	EMB_EEP_I2C_EEPROM_BUS_NUM_1 = CONFIG_EMB_EEP_I2C_EEPROM_BUS_NUM_EE1;
-	if (is_cpu_type(MXC_CPU_MX7D))
-		emb_eep_init_r (1, 1, 2); /* import 2 MAC addresses */
-	if (is_cpu_type(MXC_CPU_MX7S))
-		emb_eep_init_r (1, 1, 1); /* import 1 MAC address */
+	emb_eep_init_r (1, 1, 1); /* import 1 MAC address */
 #endif
 
 	/* set PCIE present signal according to environment settings */
