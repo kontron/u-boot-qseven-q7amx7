@@ -464,6 +464,8 @@ int misc_init_r(void)
 	/* snvs_lpgpr_set(0x12345678); */
 
 	/* init GPIO lines to ground */
+
+	gpio_direction_output(IMX_GPIO_NR(4,4), 0);     /*pull ENET_RST# to low*/
 	gpio_direction_output(IMX_GPIO_NR(2,16), 0);	/*GPIO4*/
 	gpio_direction_output(IMX_GPIO_NR(2,17), 0);	/*GPIO5*/
 	gpio_direction_output(IMX_GPIO_NR(2,18), 0);	/*GPIO6*/
