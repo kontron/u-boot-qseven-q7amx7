@@ -21,9 +21,6 @@
 		i2c3 = &i2c4;
 		serial0 = &uart1;
 		serial1 = &uart2;
-		serial2 = &uart3;
-		serial3 = &uart4;
-		serial4 = &uart5;
 		serial5 = &uart6;
 		serial6 = &uart7;
 	};
@@ -123,12 +120,6 @@
 				status = "disabled";
 			};
 
-			uart3: serial@30880000 {
-				compatible = "fsl,imx7d-uart",
-					     "fsl,imx6q-uart";
-				reg = <0x30880000 0x10000>;
-				status = "disabled";
-			};
 
 			i2c1: i2c@30a20000 {
 				#address-cells = <1>;
@@ -162,19 +153,6 @@
 				status = "disabled";
 			};
 
-			uart4: serial@30a60000 {
-				compatible = "fsl,imx7d-uart",
-					     "fsl,imx6q-uart";
-				reg = <0x30a60000 0x10000>;
-				status = "disabled";
-			};
-
-			uart5: serial@30a70000 {
-				compatible = "fsl,imx7d-uart",
-					     "fsl,imx6q-uart";
-				reg = <0x30a70000 0x10000>;
-				status = "disabled";
-			};
 
 			uart6: serial@30a80000 {
 				compatible = "fsl,imx7d-uart",
