@@ -185,7 +185,7 @@
 		"run bootos" "\0" \
 	"netsetbootargs=bootp && setenv bootargs console=${console},${baudrate} root=/dev/nfs ip=dhcp " \
 		"nfsroot=${serverip}:${nfsrootpath},v3,tcp mipi_dsi_samsung.lvds_freq=50" "\0" \
-	"nfsrootpath=/srv/export/samx7" "\0" \
+	"nfsrootpath=/srv/export/qseven" "\0" \
 	"netboot=echo Booting from net ...; " \
 		"run netsetbootargs && " \
 		"tftp ${loadaddr} ${image} && " \
@@ -202,10 +202,15 @@
 		"usb start && usb dev ${bdev} && setenv rootpath ${usbroot} && " \
 		"run bootos" "\0" \
 	"qspi_header_file=qspi-header.bin" "\0" \
-	"uboot_update_file=u-boot-q7amx7-spl.imx" "\0" \
+	"uboot_update_file=u-boot_Qseven-iMX7_spl.imx" "\0" \
 	"uboot_install=bootp && tftp 80800000 ${qspi_header_file} && tftp 88000000 ${uboot_update_file} && " \
 		"sf probe 0 && sf erase 0 80000 && sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0" \
 	"uboot_update=bootp && tftp 88000000 ${uboot_update_file} && " \
+		"sf probe 0 && sf read 80800000 0 200 && sf erase 0 80000 && " \
+		"sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0" \
+	"usb_uboot_install=usb start && usb dev 0 && fatload usb 0:1 80800000 ${qspi_header_file} && fatload usb 0:1 88000000 ${uboot_update_file} && " \
+		"sf probe 0 && sf erase 0 80000 && sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0" \
+	"usb_uboot_update=usb start && usb dev 0 && fatload usb 0:1 88000000 ${uboot_update_file} && " \
 		"sf probe 0 && sf read 80800000 0 200 && sf erase 0 80000 && " \
 		"sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0"
 
