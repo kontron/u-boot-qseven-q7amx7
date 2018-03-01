@@ -213,7 +213,7 @@
 		"sf probe 0 && sf erase 0 80000 && sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0" \
 	"usb_uboot_update=usb start && usb dev 0 && fatload usb 0:1 88000000 ${uboot_update_file} && " \
 		"sf probe 0 && sf read 80800000 0 200 && sf erase 0 80000 && " \
-		"sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0"
+		"sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0" \
 	"updFal=echo update failed" "\0" \
 	"update=run usb_uboot_update || run updFal" "\0"
 
