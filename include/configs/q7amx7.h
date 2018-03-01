@@ -120,11 +120,11 @@
 #define CONFIG_ENV_IS_IN_SPI_FLASH
 #define CONFIG_ENV_SECT_SIZE        (32 * 1024)
 
-#define CONFIG_ENV_OFFSET           0x1c0000
+#define CONFIG_ENV_OFFSET           0x0c0000
 #define CONFIG_ENV_SIZE             SZ_8K
 
 #define CONFIG_SYS_REDUNDAND_ENVIRONMENT
-#define CONFIG_ENV_OFFSET_REDUND    0x1c8000
+#define CONFIG_ENV_OFFSET_REDUND    0x0c8000
 #define CONFIG_ENV_SIZE_REDUND      (CONFIG_ENV_SIZE)
 #else
 #define CONFIG_ENV_IS_NOWHERE
@@ -167,6 +167,7 @@
 	"pcie_b_prsnt=yes" "\0" \
 	"pcie_c_prsnt=yes" "\0" \
 	"pwm_out_disable=no" "\0" \
+	"bootm_boot_mode=sec" "\0" \
 	"bootfailed=echo Booting failed from all boot sources && false" "\0" \
 	"bootos=run setbootargs && " \
 		"run loadimage && " \
@@ -215,7 +216,7 @@
 		"sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0"
 
 #define CONFIG_BOOTCOMMAND \
-		"run mmcboot || run sdboot || run usbboot || run netboot || run bootfailed"
+	"run mmcboot || run sdboot || run usbboot || run netboot || run bootfailed"
 
 #define CONFIG_SYS_MEMTEST_START	0x80000000
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + 0x20000000)
