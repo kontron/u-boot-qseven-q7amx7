@@ -204,9 +204,9 @@
 		"run bootos" "\0" \
 	"qspi_header_file=qspi-header.bin" "\0" \
 	"uboot_update_file=u-boot_Qseven-iMX7_spl.imx" "\0" \
-	"uboot_install=bootp && tftp 80800000 ${qspi_header_file} && tftp 88000000 ${uboot_update_file} && " \
+	"net_uboot_install=bootp && tftp 80800000 ${qspi_header_file} && tftp 88000000 ${uboot_update_file} && " \
 		"sf probe 0 && sf erase 0 80000 && sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0" \
-	"uboot_update=bootp && tftp 88000000 ${uboot_update_file} && " \
+	"net_uboot_update=bootp && tftp 88000000 ${uboot_update_file} && " \
 		"sf probe 0 && sf read 80800000 0 200 && sf erase 0 80000 && " \
 		"sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0" \
 	"usb_uboot_install=usb start && usb dev 0 && fatload usb 0:1 80800000 ${qspi_header_file} && fatload usb 0:1 88000000 ${uboot_update_file} && " \
@@ -214,6 +214,8 @@
 	"usb_uboot_update=usb start && usb dev 0 && fatload usb 0:1 88000000 ${uboot_update_file} && " \
 		"sf probe 0 && sf read 80800000 0 200 && sf erase 0 80000 && " \
 		"sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0"
+	"updFal=echo update failed" "\0" \
+	"update=run usb_uboot_update || run updFal" "\0"
 
 #define CONFIG_BOOTCOMMAND \
 	"run mmcboot || run sdboot || run usbboot || run netboot || run bootfailed"
