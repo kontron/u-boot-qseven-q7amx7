@@ -152,10 +152,11 @@
 #define UPDATE_M4_ENV ""
 #endif
 
+#if 0
 #define CONFIG_EXTRA_ENV_SETTINGS \
 	UPDATE_M4_ENV \
 	"autoload=no" "\0" \
-	"set_fdtfile=setenv fdtfile imx7${core_variant}-samx7-${panel}.dtb;" "\0" \
+	"set_fdtfile=setenv fdtfile imx7${core_variant}-q7amx7-${panel}.dtb;" "\0" \
 	"clear_env=sf probe 0 && sf erase " __stringify(CONFIG_ENV_OFFSET) " 10000" "\0" \
 	"console=ttymxc0" "\0" \
 	"fdt_addr=0x83000000" "\0" \
@@ -219,6 +220,26 @@
 
 #define CONFIG_BOOTCOMMAND \
 	"run mmcboot || run sdboot || run usbboot || run netboot || run bootfailed"
+#else
+#define CONFIG_EXTRA_ENV_SETTINGS \
+	"autoload=no" "\0" \
+	"bootm_boot_mode=sec" "\0" \
+	"fdt_high=0xffffffff" "\0" \
+	"initrd_high=0xffffffff" "\0" \
+	"uboot_update_file=u-boot_Qseven-iMX7_spl.imx" "\0" \
+	"net_uboot_update=bootp && tftp 88000000 ${uboot_update_file} && " \
+		"sf probe 0 && sf read 80800000 0 200 && sf erase 0 80000 && " \
+		"sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0" \
+	"usb_uboot_update=usb start && usb dev 0 && fatload usb 0:1 88000000 ${uboot_update_file} && " \
+		"sf probe 0 && sf read 80800000 0 200 && sf erase 0 80000 && " \
+		"sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0" \
+	"updFal=echo update failed" "\0" \
+	"update=run usb_uboot_update || run updFal" "\0"
+
+#define CONFIG_BOOTCOMMAND \
+	"echo Exit to CLI"
+
+#endif
 
 #define CONFIG_SYS_MEMTEST_START	0x80000000
 #define CONFIG_SYS_MEMTEST_END		(CONFIG_SYS_MEMTEST_START + 0x20000000)
