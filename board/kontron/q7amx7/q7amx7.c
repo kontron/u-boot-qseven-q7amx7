@@ -421,6 +421,16 @@ int board_ehci_hcd_init(int port)
 	return 0;
 }
 
+int board_ehci_hcd_exit(int port)
+{
+	debug("%s: port = %d\n", __func__, port);
+	if (port == 2) {
+		attach_usb_hub();
+	}
+
+	return 0;
+}
+
 int misc_init_r(void)
 {
 	attach_usb_hub();
