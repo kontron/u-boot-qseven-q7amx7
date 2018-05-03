@@ -489,7 +489,7 @@ int misc_init_r(void)
 	gpio_direction_output(IMX_GPIO_NR(2,22), 0);	/*GPIO2*/
 	gpio_direction_output(IMX_GPIO_NR(2,23), 0);	/*GPIO3*/
 
-	gpio_direction_output(IMX_GPIO_NR(2,10), 1);	/* CAM0_EN# */
+	gpio_direction_output(IMX_GPIO_NR(2,10), 0);	/* CAM0_EN# */
 	gpio_direction_output(IMX_GPIO_NR(2,11), 1);	/* CAM0_RST# */
 	gpio_direction_output(IMX_GPIO_NR(2,12), 0);	/* CAM0_GPIO */
 
