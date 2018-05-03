@@ -239,7 +239,8 @@ int board_eth_init(bd_t *bis)
 	udelay(10);
 
 	/* remove PHY reset */
-	gpio_direction_output(IMX_GPIO_NR(4, 4), 1);
+	gpio_direction_output(IMX_GPIO_NR(4, 4), 1);	//Enbale for 1st Spin module
+	gpio_direction_output(IMX_GPIO_NR(7, 15), 1);	//Enable for 2nd Spin module
 
 	/* FEC0 is connected to PHY#0 */
 	ret = fecmxc_initialize_multi(bis, 0, 0, IMX_FEC_BASE);
