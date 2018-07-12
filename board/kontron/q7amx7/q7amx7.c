@@ -395,11 +395,11 @@ static int attach_usb_hub(void)
 {
 	uint8_t usbattach_cmd[] = {0xaa, 0x55, 0x00};
 
-	/* reset USBHUB */
-	gpio_direction_output(IMX_GPIO_NR(1, 0), 0);
+	/* reset USBHUB - GPIO7_IO14 */
+	gpio_direction_output(IMX_GPIO_NR(7, 14), 0);
 	udelay(1000);
-	/* remove USBHUB reset */
-	gpio_direction_output(IMX_GPIO_NR(1, 0), 1);
+	/* remove USBHUB reset - GPIO7_IO14*/
+	gpio_direction_output(IMX_GPIO_NR(7, 14), 1);
 	udelay(250000);
 
 	i2c_set_bus_num(1);
