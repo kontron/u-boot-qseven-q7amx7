@@ -226,13 +226,18 @@
 	"bootm_boot_mode=sec" "\0" \
 	"fdt_high=0xffffffff" "\0" \
 	"initrd_high=0xffffffff" "\0" \
-	"uboot_update_file=u-boot_Qseven-iMX7_spl.imx" "\0" \
+	"uboot_update_file=u-boot_Qseven-Q7AMX7_spl.imx" "\0" \
+	"qspi_header_file=qspi-header.bin" "\0" \
 	"net_uboot_update=bootp && tftp 88000000 ${uboot_update_file} && " \
 		"sf probe 0 && sf read 80800000 0 200 && sf erase 0 80000 && " \
 		"sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0" \
+	"usb_uboot_install=usb start && usb dev 0 && fatload usb 0:1 80800000 ${qspi_header_file} && fatload usb 0:1 88000000 ${uboot_update_file} && " \
+		"sf probe 0 && sf erase 0 80000 && sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0" \
 	"usb_uboot_update=usb start && usb dev 0 && fatload usb 0:1 88000000 ${uboot_update_file} && " \
 		"sf probe 0 && sf read 80800000 0 200 && sf erase 0 80000 && " \
 		"sf write 80800000 0 200 && sf write 88000000 400 ${filesize}" "\0" \
+	"installFal=echo installation failed" "\0" \
+	"install=run usb_uboot_install || run installFal" "\0" \
 	"updFal=echo update failed" "\0" \
 	"update=run usb_uboot_update || run updFal" "\0"
 
